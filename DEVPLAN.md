@@ -1,0 +1,52 @@
+# pag — Development Plan
+
+## M1 — Project scaffolding
+
+- [ ] Create `pyproject.toml` with metadata, dependencies, and `[project.scripts]` entry point
+- [ ] Create `src/pag/__init__.py` with version
+- [ ] Create `src/pag/__main__.py`
+- [ ] Create `install.sh`
+- [ ] Create `.env.example`
+- [ ] Verify `uv sync` and `uv run pag --version` work
+
+## M2 — Configuration and models
+
+- [ ] Implement `config.py` — API key resolution (flag > env var > .env)
+- [ ] Implement `models.py` — Pydantic models for InferenceRequest, InferenceResponse, StyleCreateRequest, StyleUpdateRequest, StyleResponse
+- [ ] Implement `styles.py` — Static registry of all styles per model (RD_PRO, RD_FAST, RD_PLUS, animations) with valid size ranges
+- [ ] Unit tests for config, models, styles
+
+## M3 — API client
+
+- [ ] Implement `client.py` — httpx-based client for `/v1/inferences` (generate, animate, cost check) and `/v1/styles` (CRUD)
+- [ ] Handle errors, timeouts, retries
+- [ ] Unit tests with respx mocks
+
+## M4 — Output handling
+
+- [ ] Implement `output.py` — base64 decode, save PNG/GIF, auto-naming, `--output-dir` support, `--stdout` mode
+- [ ] Unit tests for output
+
+## M5 — CLI
+
+- [ ] Implement `cli.py` with Click:
+  - [ ] `pag generate` — prompt, --style, --size, -n, --seed, --ref, --tile-x, --tile-y, --remove-bg, -o, --stdout, --format, --api-key
+  - [ ] `pag animate` — prompt, --style, --size, --spritesheet, -o, --api-key
+  - [ ] `pag cost` — prompt, --style, --size, -n
+  - [ ] `pag styles list|create|update|delete`
+  - [ ] `pag --version`, `pag --list-styles`
+- [ ] Unit tests for CLI (click.testing.CliRunner)
+
+## M6 — Live tests
+
+- [ ] `tests/live/conftest.py` — skip if no API key, shared fixtures
+- [ ] `test_generate.py` — basic generation, multiple images, reference images, tiling, bg removal
+- [ ] `test_animate.py` — GIF and spritesheet output
+- [ ] `test_styles_api.py` — create, update, delete custom style
+- [ ] `test_cost_check.py` — verify cost check returns expected fields
+
+## M7 — Install script and final polish
+
+- [ ] Finalize `install.sh` — uv detection/install, `uv tool install .`, verification
+- [ ] Test install flow on clean environment
+- [ ] Verify all unit and live tests pass

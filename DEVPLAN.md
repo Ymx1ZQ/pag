@@ -22,17 +22,17 @@
 - [x] Handle errors, timeouts, retries
 - [x] Unit tests with respx mocks
 
-## M4 — Output handling
+## M4 — Output handling ✅
 
-- [ ] Implement `output.py` — base64 decode, save PNG/GIF, `--stdout` mode
-- [ ] Filename resolution logic:
-  - [ ] `--output` / `-o` → exact file path (e.g. `pag generate "cat" -o cat.png`)
-  - [ ] `--output-dir` / `-d` → directory with auto-generated name
-  - [ ] `--name-pattern` → custom template using `{prompt}`, `{style}`, `{seed}`, `{n}`, `{timestamp}` placeholders
-  - [ ] Default pattern: `{prompt_slug}_{timestamp}_{n}.png` (`.gif` for animations)
-  - [ ] `{prompt_slug}` = first 48 chars of prompt, lowercased, non-alnum replaced with `_`, trailing `_` stripped
-  - [ ] `{n}` = image index (0-based), only appended when `num_images > 1` or pattern explicitly includes it
-- [ ] Unit tests for output and filename resolution
+- [x] Implement `output.py` — base64 decode, save PNG/GIF, `--stdout` mode
+- [x] Filename resolution logic:
+  - [x] `--output` / `-o` → exact file path (e.g. `pag generate "cat" -o cat.png`)
+  - [x] `--output-dir` / `-d` → directory with auto-generated name
+  - [x] `--name-pattern` → custom template using `{prompt}`, `{style}`, `{seed}`, `{n}`, `{timestamp}` placeholders
+  - [x] Default pattern: `{prompt_slug}_{timestamp}_{n}.png` (`.gif` for animations)
+  - [x] `{prompt_slug}` = first 48 chars of prompt, lowercased, non-alnum replaced with `_`, trailing `_` stripped
+  - [x] `{n}` = image index (0-based), only appended when `num_images > 1` or pattern explicitly includes it
+- [x] Unit tests for output and filename resolution
 
 ## M5 — CLI
 

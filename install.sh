@@ -42,7 +42,10 @@ fi
 
 echo "=== pag installed successfully ==="
 
-# 5. Configure API key if not already set
+# 5. Configure API key
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_ENV="$SCRIPT_DIR/.env"
+
 if [ -f "$HOME/.pag/.env" ] && grep -q "RETRODIFFUSION_API_KEY=." "$HOME/.pag/.env" 2>/dev/null; then
     echo "API key already configured in ~/.pag/.env"
     read -rp "Do you want to replace it? [y/N] " answer
@@ -53,6 +56,12 @@ if [ -f "$HOME/.pag/.env" ] && grep -q "RETRODIFFUSION_API_KEY=." "$HOME/.pag/.e
         echo "RETRODIFFUSION_API_KEY=$api_key" > "$HOME/.pag/.env"
         echo "API key updated in ~/.pag/.env"
     fi
+elif [ -f "$LOCAL_ENV" ] && grep -q "RETRODIFFUSION_API_KEY=." "$LOCAL_ENV" 2>/dev/null; then
+    # Found a .env in the repo directory — copy it to ~/.pag/
+    echo "Found .env in project directory."
+    mkdir -p "$HOME/.pag"
+    cp "$LOCAL_ENV" "$HOME/.pag/.env"
+    echo "API key copied to ~/.pag/.env"
 else
     echo ""
     read -rp "Do you want to configure your Retro Diffusion API key now? [Y/n] " answer

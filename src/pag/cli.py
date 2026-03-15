@@ -451,3 +451,31 @@ def config_show() -> None:
         click.echo(f"Source:  ~/.pag/.env")
     else:
         click.echo("No API key configured. Run `pag config set-key` to set one.")
+
+
+# ── completions ──────────────────────────────────────────────────────────────
+
+_BASH_COMPLETION = """\
+eval "$(_PAG_COMPLETE=bash_source pag)"
+"""
+
+_ZSH_COMPLETION = """\
+eval "$(_PAG_COMPLETE=zsh_source pag)"
+"""
+
+
+@main.command()
+@click.argument("shell", type=click.Choice(["bash", "zsh"]))
+def completions(shell: str) -> None:
+    """Output shell completion script.
+
+    Add to your shell profile:
+
+      eval "$(pag completions bash)"   # bash
+
+      eval "$(pag completions zsh)"    # zsh
+    """
+    if shell == "bash":
+        click.echo(_BASH_COMPLETION, nl=False)
+    else:
+        click.echo(_ZSH_COMPLETION, nl=False)

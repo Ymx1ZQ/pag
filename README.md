@@ -262,6 +262,18 @@ pag styles list
 | `--icon` | Icon name (e.g. `skull`, `sparkles`, `fire`, `sword`) |
 | `--api-key` | Override API key |
 
+### Shell completions
+
+Enable tab completion for all commands, options, and style names:
+
+```bash
+# Bash — add to ~/.bashrc
+eval "$(pag completions bash)"
+
+# Zsh — add to ~/.zshrc
+eval "$(pag completions zsh)"
+```
+
 ### Filename patterns
 
 Control how output files are named using `--name-pattern` with these placeholders:

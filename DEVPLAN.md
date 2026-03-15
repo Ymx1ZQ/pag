@@ -93,8 +93,8 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Unit tests (2 new tests)
 - [x] Update README
 
-## M12 — Shell completions
+## M12 — Shell completions ✅
 
-- [ ] Add `pag completions` command that outputs shell completion script
-- [ ] Support bash and zsh (`pag completions bash`, `pag completions zsh`)
-- [ ] Document installation in README (e.g. `eval "$(pag completions bash)"` or append to `.bashrc`)
+- [x] Add `pag completions` command that outputs shell completion script
+- [x] Support bash and zsh (`pag completions bash`, `pag completions zsh`)
+- [x] Document installation in README

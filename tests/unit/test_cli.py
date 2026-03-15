@@ -438,3 +438,23 @@ def test_config_show_not_configured(runner, tmp_path, monkeypatch):
     result = runner.invoke(main, ["config", "show"])
     assert result.exit_code == 0
     assert "No API key configured" in result.output
+
+
+# ── completions ──────────────────────────────────────────────────────────────
+
+
+def test_completions_bash(runner):
+    result = runner.invoke(main, ["completions", "bash"])
+    assert result.exit_code == 0
+    assert "_PAG_COMPLETE=bash_source" in result.output
+
+
+def test_completions_zsh(runner):
+    result = runner.invoke(main, ["completions", "zsh"])
+    assert result.exit_code == 0
+    assert "_PAG_COMPLETE=zsh_source" in result.output
+
+
+def test_completions_invalid_shell(runner):
+    result = runner.invoke(main, ["completions", "fish"])
+    assert result.exit_code != 0

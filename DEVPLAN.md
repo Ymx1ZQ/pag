@@ -9,12 +9,12 @@
 - [x] Create `.env.example`
 - [x] Verify `uv sync` and `uv run pag --version` work
 
-## M2 — Configuration and models
+## M2 — Configuration and models ✅
 
-- [ ] Implement `config.py` — API key resolution (flag > env var > .env)
-- [ ] Implement `models.py` — Pydantic models for InferenceRequest, InferenceResponse, StyleCreateRequest, StyleUpdateRequest, StyleResponse
-- [ ] Implement `styles.py` — Static registry of all styles per model (RD_PRO, RD_FAST, RD_PLUS, animations) with valid size ranges
-- [ ] Unit tests for config, models, styles
+- [x] Implement `config.py` — API key resolution (flag > env var > .env)
+- [x] Implement `models.py` — Pydantic models for InferenceRequest, InferenceResponse, StyleCreateRequest, StyleUpdateRequest, StyleResponse
+- [x] Implement `styles.py` — Static registry of all styles per model (RD_PRO, RD_FAST, RD_PLUS, animations) with valid size ranges
+- [x] Unit tests for config, models, styles
 
 ## M3 — API client
 

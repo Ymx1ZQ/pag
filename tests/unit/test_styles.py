@@ -81,3 +81,81 @@ def test_validate_size_square_only_valid():
 def test_style_keys_prefixed():
     for s in ALL_STYLES:
         assert s.key.startswith(("rd_pro__", "rd_fast__", "rd_plus__", "animation__"))
+
+
+# ── Verify correct style names match official API ───────────────────────────
+
+
+def test_old_style_names_removed():
+    """Styles that don't exist in the official API must not be in the registry."""
+    removed = [
+        "rd_fast__minecraft_block",
+        "rd_fast__minecraft_item",
+        "rd_fast__minecraft_mob",
+        "rd_plus__topdown_character",
+        "rd_plus__topdown_tileset",
+        "rd_plus__isometric_object",
+        "rd_plus__isometric_environment",
+        "rd_plus__minecraft_block",
+        "rd_plus__minecraft_item",
+        "rd_plus__minecraft_mob",
+    ]
+    for key in removed:
+        assert get_style(key) is None, f"{key} should not exist"
+
+
+def test_correct_style_names_present():
+    """Styles renamed to match the official API must exist."""
+    expected = [
+        "rd_fast__mc_item",
+        "rd_fast__mc_texture",
+        "rd_plus__topdown_map",
+        "rd_plus__topdown_asset",
+        "rd_plus__isometric",
+        "rd_plus__isometric_asset",
+        "rd_plus__mc_item",
+        "rd_plus__mc_texture",
+    ]
+    for key in expected:
+        assert get_style(key) is not None, f"{key} should exist"
+
+
+# ── Verify per-style size limits match official API ─────────────────────────
+
+
+@pytest.mark.parametrize("key,min_s,max_s", [
+    ("rd_fast__low_res", 16, 128),
+    ("rd_fast__mc_item", 16, 128),
+    ("rd_fast__mc_texture", 16, 128),
+    ("rd_plus__classic", 32, 192),
+    ("rd_plus__low_res", 16, 128),
+    ("rd_plus__mc_item", 16, 128),
+    ("rd_plus__mc_texture", 16, 128),
+    ("rd_plus__topdown_item", 16, 128),
+    ("rd_plus__skill_icon", 16, 128),
+])
+def test_per_style_size_limits(key, min_s, max_s):
+    style = get_style(key)
+    assert style is not None, f"{key} not found"
+    assert style.min_w == min_s
+    assert style.min_h == min_s
+    assert style.max_w == max_s
+    assert style.max_h == max_s
+
+
+def test_validate_low_res_size():
+    """Low-res styles should accept 16x16."""
+    style = get_style("rd_fast__low_res")
+    validate_size(style, 16, 16)  # should not raise
+
+
+def test_validate_low_res_rejects_below_min():
+    style = get_style("rd_fast__low_res")
+    with pytest.raises(ValueError, match="Width.*out of range"):
+        validate_size(style, 8, 16)
+
+
+def test_validate_low_res_rejects_above_max():
+    style = get_style("rd_fast__low_res")
+    with pytest.raises(ValueError, match="Width.*out of range"):
+        validate_size(style, 256, 128)

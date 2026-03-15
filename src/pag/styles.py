@@ -28,21 +28,33 @@ def _pro(name: str, label: str | None = None) -> StyleInfo:
     )
 
 
-def _fast(name: str, label: str | None = None) -> StyleInfo:
+def _fast(
+    name: str,
+    label: str | None = None,
+    *,
+    min_s: int = 64,
+    max_s: int = 384,
+) -> StyleInfo:
     return StyleInfo(
         key=f"rd_fast__{name}",
         model="rd_fast",
         label=label or name.replace("_", " ").title(),
-        min_w=64, max_w=384, min_h=64, max_h=384,
+        min_w=min_s, max_w=max_s, min_h=min_s, max_h=max_s,
     )
 
 
-def _plus(name: str, label: str | None = None) -> StyleInfo:
+def _plus(
+    name: str,
+    label: str | None = None,
+    *,
+    min_s: int = 64,
+    max_s: int = 384,
+) -> StyleInfo:
     return StyleInfo(
         key=f"rd_plus__{name}",
         model="rd_plus",
         label=label or name.replace("_", " ").title(),
-        min_w=64, max_w=384, min_h=64, max_h=384,
+        min_w=min_s, max_w=max_s, min_h=min_s, max_h=max_s,
     )
 
 
@@ -67,6 +79,7 @@ def _anim(
 
 
 # ── Style catalogue ─────────────────────────────────────────────────────────
+# Source of truth: https://github.com/Retro-Diffusion/api-examples
 
 RD_PRO_STYLES: list[StyleInfo] = [
     _pro("default"),
@@ -102,10 +115,9 @@ RD_FAST_STYLES: list[StyleInfo] = [
     _fast("item_sheet", "Item Sheet"),
     _fast("character_turnaround", "Character Turnaround"),
     _fast("1_bit", "1-Bit"),
-    _fast("low_res", "Low Res"),
-    _fast("minecraft_block", "Minecraft Block"),
-    _fast("minecraft_item", "Minecraft Item"),
-    _fast("minecraft_mob", "Minecraft Mob"),
+    _fast("low_res", "Low Res", min_s=16, max_s=128),
+    _fast("mc_item", "MC Item", min_s=16, max_s=128),
+    _fast("mc_texture", "MC Texture", min_s=16, max_s=128),
     _fast("no_style", "No Style"),
 ]
 
@@ -119,17 +131,16 @@ RD_PLUS_STYLES: list[StyleInfo] = [
     _plus("item_sheet", "Item Sheet"),
     _plus("character_turnaround", "Character Turnaround"),
     _plus("environment"),
-    _plus("topdown_character", "Top-Down Character"),
-    _plus("topdown_tileset", "Top-Down Tileset"),
-    _plus("isometric_object", "Isometric Object"),
-    _plus("isometric_environment", "Isometric Environment"),
-    _plus("classic"),
-    _plus("low_res", "Low Res"),
-    _plus("minecraft_block", "Minecraft Block"),
-    _plus("minecraft_item", "Minecraft Item"),
-    _plus("minecraft_mob", "Minecraft Mob"),
-    _plus("topdown_item", "Top-Down Item"),
-    _plus("skill_icon", "Skill Icon"),
+    _plus("topdown_map", "Top-Down Map"),
+    _plus("topdown_asset", "Top-Down Asset"),
+    _plus("isometric", "Isometric"),
+    _plus("isometric_asset", "Isometric Asset"),
+    _plus("classic", "Classic", min_s=32, max_s=192),
+    _plus("low_res", "Low Res", min_s=16, max_s=128),
+    _plus("mc_item", "MC Item", min_s=16, max_s=128),
+    _plus("mc_texture", "MC Texture", min_s=16, max_s=128),
+    _plus("topdown_item", "Top-Down Item", min_s=16, max_s=128),
+    _plus("skill_icon", "Skill Icon", min_s=16, max_s=128),
 ]
 
 ANIMATION_STYLES: list[StyleInfo] = [

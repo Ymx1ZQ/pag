@@ -309,19 +309,47 @@ pag generate "gems" --style rd_pro__default -n 3 -d ./output/
 
 **Default pattern:** `{prompt_slug}_{timestamp}.png` (single image) or `{prompt_slug}_{timestamp}_{n}.png` (multiple). Animations use `.gif` unless `--spritesheet` is set.
 
-## Available styles
+## Available styles and size limits
 
-### RD_PRO (96x96 → 256x256)
+> **Important:** Each style has a minimum and maximum allowed size. Requests below the minimum size will be rejected by the API. Always check the limits below before generating.
+
+### RD_PRO — min 96x96, max 256x256
+
+All RD_PRO styles share the same size range.
 
 `default`, `painterly`, `fantasy`, `ui_panel`, `horror`, `scifi`, `simple`, `isometric`, `topdown`, `platformer`, `dungeon_map`, `edit`, `pixelate`, `spritesheet`, `typography`, `hexagonal_tiles`, `fps_weapon`, `inventory_items`
 
-### RD_FAST (64x64 → 384x384)
+### RD_FAST — varies by style
 
-`default`, `retro`, `simple`, `detailed`, `anime`, `game_asset`, `portrait`, `texture`, `ui`, `item_sheet`, `character_turnaround`, `1_bit`, `low_res`, `minecraft_block`, `minecraft_item`, `minecraft_mob`, `no_style`
+| Style group | Styles | Min size | Max size |
+|-------------|--------|----------|----------|
+| Default | `default`, `retro`, `simple`, `detailed`, `anime`, `game_asset`, `portrait`, `texture`, `ui`, `item_sheet`, `character_turnaround`, `1_bit`, `no_style` | 64x64 | 384x384 |
+| Low res | `low_res` | 16x16 | 128x128 |
+| Minecraft | `mc_item`, `mc_texture` | 16x16 | 128x128 |
 
-### RD_PLUS (varies by style)
+### RD_PLUS — varies by style
 
-`default`, `retro`, `watercolor`, `textured`, `cartoon`, `ui_element`, `item_sheet`, `character_turnaround`, `environment`, `topdown_character`, `topdown_tileset`, `isometric_object`, `isometric_environment`, `classic`, `low_res`, `minecraft_block`, `minecraft_item`, `minecraft_mob`, `topdown_item`, `skill_icon`
+| Style group | Styles | Min size | Max size |
+|-------------|--------|----------|----------|
+| Default | `default`, `retro`, `watercolor`, `textured`, `cartoon`, `ui_element`, `item_sheet`, `character_turnaround`, `environment`, `topdown_map`, `topdown_asset`, `isometric`, `isometric_asset` | 64x64 | 384x384 |
+| Classic | `classic` | 32x32 | 192x192 |
+| Low res | `low_res` | 16x16 | 128x128 |
+| Minecraft | `mc_item`, `mc_texture` | 16x16 | 128x128 |
+| Top-down item | `topdown_item` | 16x16 | 128x128 |
+| Skill icon | `skill_icon` | 16x16 | 128x128 |
+
+### Animations — fixed or limited sizes
+
+Most animation styles use a **fixed size** that cannot be changed. Only `vfx` supports a range.
+
+| Style | Size | Notes |
+|-------|------|-------|
+| `any_animation` | 64x64 fixed | |
+| `8_dir_rotation` | 80x80 fixed | |
+| `four_angle_walking` | 48x48 fixed | Other sizes are ignored |
+| `walking_and_idle` | 48x48 fixed | |
+| `small_sprites` | 32x32 fixed | |
+| `vfx` | 24x24 → 96x96 | Must be square |
 
 ## Development
 

@@ -98,3 +98,141 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Add `pag completions` command that outputs shell completion script
 - [x] Support bash and zsh (`pag completions bash`, `pag completions zsh`)
 - [x] Document installation in README
+
+## M13 — Fix style names and size limits ✅
+
+- [x] Fix RD_FAST style names (removed minecraft_block/mob, renamed minecraft_item→mc_item, added mc_texture)
+- [x] Fix RD_PLUS style names (topdown_map, topdown_asset, isometric, isometric_asset, mc_item, mc_texture, removed minecraft_mob)
+- [x] Fix per-style size limits (low_res, mc_item, mc_texture → 16-128; classic → 32-192)
+- [x] Added factory kwargs min_s/max_s to _fast() and _plus() for per-style overrides
+- [x] Updated README "Available styles and size limits" section
+- [x] Added 25 new unit tests for name/size validation (124 total, all green)
+
+## M14 — Fix InferenceRequest field constraints
+
+Il model Pydantic ha vincoli sbagliati che impediscono l'uso di stili a bassa risoluzione.
+
+- [ ] `InferenceRequest.width`: `ge=24` → `ge=16` (stili low_res/mc vanno fino a 16)
+- [ ] `InferenceRequest.height`: `ge=24` → `ge=16`
+- [ ] Aggiornare unit test che validano i bounds
+
+## M15 — Aggiungere parametri API mancanti a InferenceRequest
+
+Parametri supportati dall'API che il nostro model non include.
+
+- [ ] `strength: float | None` (0.0–1.0, per img2img)
+- [ ] `input_palette: str | None` (base64, riferimento palette colori)
+- [ ] `return_pre_palette: bool` (ricevere immagine pre-palette)
+- [ ] `bypass_prompt_expansion: bool` (disabilitare prompt expansion)
+- [ ] `include_downloadable_data: bool` (per inventory_items e simili)
+- [ ] `return_non_bg_removed: bool` (ricevere immagine originale quando remove_bg=True)
+- [ ] `upscale_output_factor: int | None` (1 = risoluzione nativa, null = default)
+- [ ] `extra_prompt: str | None` (per tileset_advanced)
+- [ ] `extra_input_image: str | None` (per tileset_advanced)
+- [ ] `frames_duration: int | None` (per advanced animations: 4, 6, 8, 10, 12, 16)
+- [ ] Aggiornare unit test
+
+## M16 — Fix InferenceResponse e StyleResponse
+
+I model di risposta non catturano tutti i campi restituiti dall'API.
+
+**InferenceResponse — campi mancanti:**
+- [ ] `output_images: list[str]` (default `[]`)
+- [ ] `output_urls: list[str]` (default `[]`)
+- [ ] `downloadable_data: dict | None` (quando include_downloadable_data è usato)
+
+**StyleResponse — campi mancanti:**
+- [ ] `prompt_style: str | None` (la chiave da usare nelle inference)
+- [ ] `type: str | None` (es. "user")
+- [ ] `created_at: int | None`
+- [ ] `updated_at: int | None`
+- [ ] `deleted: bool | None` (restituito dal delete)
+
+- [ ] Aggiornare `cli.py` per mostrare `prompt_style` dopo la creazione (è il valore che l'utente deve usare)
+- [ ] Aggiornare unit test
+
+## M17 — Aggiungere stili Tileset (rd_tile)
+
+L'API supporta 6 stili tileset che non sono nel nostro registry e non hanno un comando CLI.
+
+**Stili da aggiungere a `styles.py`:**
+- [ ] `rd_tile__tileset` (16→32)
+- [ ] `rd_tile__tileset_advanced` (16→32)
+- [ ] `rd_tile__single_tile` (16→64)
+- [ ] `rd_tile__tile_variation` (16→128)
+- [ ] `rd_tile__tile_object` (16→96)
+- [ ] `rd_tile__scene_object` (64→384)
+
+**CLI:**
+- [ ] Aggiungere comando `pag tileset` (o integrare in `pag generate` con model detection)
+- [ ] Supportare `extra_prompt` e `extra_input_image` per `tileset_advanced`
+- [ ] Aggiungere `rd_tile` come opzione in `pag list-styles --model`
+- [ ] Unit test
+
+## M18 — Aggiungere Advanced Animations (rd_advanced_animation)
+
+L'API supporta 8 stili di animazione avanzata che richiedono un input_image e supportano frames_duration.
+
+**Stili da aggiungere a `styles.py`:**
+- [ ] `rd_advanced_animation__attack` (32→256)
+- [ ] `rd_advanced_animation__crouch` (32→256)
+- [ ] `rd_advanced_animation__custom_action` (32→256)
+- [ ] `rd_advanced_animation__destroy` (32→256)
+- [ ] `rd_advanced_animation__idle` (32→256)
+- [ ] `rd_advanced_animation__jump` (32→256)
+- [ ] `rd_advanced_animation__subtle_motion` (32→256)
+- [ ] `rd_advanced_animation__walking` (32→256)
+
+**CLI:**
+- [ ] Integrare in `pag animate` o creare `pag animate-advanced`
+- [ ] `--input-image` obbligatorio per questi stili
+- [ ] `--frames-duration` opzione (4, 6, 8, 10, 12, 16)
+- [ ] Aggiungere `rd_advanced_animation` come opzione in `pag list-styles --model`
+- [ ] Unit test
+
+## M19 — Aggiungere endpoint Edit (POST /v1/edit)
+
+L'API ha un endpoint di editing separato che non supportiamo.
+
+- [ ] Aggiungere `EditRequest` e `EditResponse` a `models.py`
+  - Request: `prompt: str`, `inputImageBase64: str`
+  - Response: `outputImageBase64: str`, `remaining_credits: float`
+  - Size supportata: 16x16→256x256
+- [ ] Aggiungere metodo `edit()` a `RetroClient`
+- [ ] Aggiungere comando `pag edit` al CLI
+  - `pag edit "add a hat" --input-image sprite.png`
+  - Supportare `-o`, `-d`, `--name-pattern`, `--stdout`, `--open`
+- [ ] Unit test
+
+## M20 — Aggiungere endpoint Balance (GET /v1/inferences/credits)
+
+L'API permette di controllare il saldo crediti.
+
+- [ ] Aggiungere metodo `get_balance()` a `RetroClient`
+- [ ] Aggiungere comando `pag balance` al CLI
+- [ ] Unit test
+
+## M21 — Aggiungere opzioni CLI mancanti per generate
+
+Esporre i parametri API aggiunti in M15 come opzioni CLI in `pag generate`.
+
+- [ ] `--input-image PATH` + `--strength FLOAT` (img2img)
+- [ ] `--input-palette PATH` (palette reference)
+- [ ] `--bypass-prompt-expansion` (flag)
+- [ ] `--upscale-output-factor INT` (1 = nativo)
+- [ ] `--include-downloadable-data` (flag, salva JSON aggiuntivo)
+- [ ] `--return-non-bg-removed` (flag, salva anche l'immagine senza bg removal)
+- [ ] `--return-pre-palette` (flag, salva anche l'immagine pre-palette)
+- [ ] Unit test
+
+## M22 — Audit e fix README finale
+
+Revisione completa del README per allinearlo a tutti i fix precedenti.
+
+- [ ] Sezione "Available styles and size limits" — aggiornare nomi, tabelle, range, includere tileset e advanced animations
+- [ ] Sezione animate — aggiungere advanced animations
+- [ ] Aggiungere sezione tileset
+- [ ] Aggiungere sezione edit
+- [ ] Aggiungere sezione balance
+- [ ] Aggiungere documentazione nuove opzioni generate (img2img, palette, ecc.)
+- [ ] Verificare che ogni stile e parametro listato corrisponda esattamente all'API

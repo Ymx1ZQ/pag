@@ -299,6 +299,53 @@ def test_animate_input_image(mock_key, mock_client_cls, runner, tmp_path):
     assert req.input_image is not None
 
 
+# ── advanced animation ──────────────────────────────────────────────────────
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_animate_advanced_style(mock_key, mock_client_cls, runner, tmp_path):
+    img = tmp_path / "sprite.png"
+    img.write_bytes(b"fake image")
+
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "animate", "slow walk",
+        "--style", "walking",
+        "--input-image", str(img),
+        "--frames-duration", "8",
+        "--size", "96x96",
+        "-o", str(tmp_path / "walk.gif"),
+    ])
+    assert result.exit_code == 0
+    req = mock_client.infer.call_args[0][0]
+    assert req.prompt_style == "rd_advanced_animation__walking"
+    assert req.frames_duration == 8
+    assert req.input_image is not None
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_animate_advanced_requires_input_image(mock_key, mock_client_cls, runner, tmp_path):
+    mock_client = MagicMock()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "animate", "attack",
+        "--style", "rd_advanced_animation__attack",
+        "-o", str(tmp_path / "attack.gif"),
+    ])
+    assert result.exit_code != 0
+    assert "require --input-image" in result.output
+
+
 # ── tileset ─────────────────────────────────────────────────────────────────
 
 

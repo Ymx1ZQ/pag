@@ -63,7 +63,7 @@ def main(ctx: click.Context, verbose: bool) -> None:
 
 
 @main.command("list-styles")
-@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "rd_tile", "animation"]), default=None)
+@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "rd_tile", "animation", "rd_advanced_animation"]), default=None)
 def list_styles_cmd(model: str | None) -> None:
     """List all available built-in styles."""
     for s in list_styles(model):
@@ -176,11 +176,12 @@ def generate(
 
 @main.command()
 @click.argument("prompt")
-@click.option("--style", required=True, help="Animation style (e.g. walking_and_idle, vfx). Use `pag list-styles --model animation`.")
+@click.option("--style", required=True, help="Animation style (e.g. walking_and_idle, vfx, or advanced: attack, idle, walking).")
 @click.option("--size", default=None, help="Image size as WxH. Defaults to style default.")
 @click.option("--spritesheet", is_flag=True, help="Output PNG spritesheet instead of GIF.")
 @click.option("--remove-bg", is_flag=True, help="Remove background.")
-@click.option("--input-image", default=None, type=click.Path(exists=True), help="Reference image for the animation.")
+@click.option("--input-image", default=None, type=click.Path(exists=True), help="Reference image for the animation (required for advanced animations).")
+@click.option("--frames-duration", default=None, type=click.Choice(["4", "6", "8", "10", "12", "16"]), help="Number of frames (advanced animations only).")
 @click.option("-o", "--output", default=None, help="Output file path.")
 @click.option("-d", "--output-dir", default=None, type=click.Path(), help="Output directory.")
 @click.option("--name-pattern", default=None, help="Filename pattern.")
@@ -194,6 +195,7 @@ def animate(
     spritesheet: bool,
     remove_bg: bool,
     input_image: str | None,
+    frames_duration: str | None,
     output: str | None,
     output_dir: str | None,
     name_pattern: str | None,
@@ -208,10 +210,25 @@ def animate(
     except ConfigError as e:
         _handle_error(e)
 
-    full_key = style if style.startswith("animation__") else f"animation__{style}"
+    # Resolve full style key: try animation__ first, then rd_advanced_animation__
+    if style.startswith(("animation__", "rd_advanced_animation__")):
+        full_key = style
+    else:
+        full_key = f"animation__{style}"
+        if get_style(full_key) is None:
+            full_key = f"rd_advanced_animation__{style}"
+
     style_info = get_style(full_key)
     if style_info is None:
-        _handle_error(click.BadParameter(f"Unknown animation style: {style!r}. Use `pag list-styles --model animation`."))
+        _handle_error(click.BadParameter(
+            f"Unknown animation style: {style!r}. "
+            "Use `pag list-styles --model animation` or `pag list-styles --model rd_advanced_animation`."
+        ))
+
+    is_advanced = style_info.model == "rd_advanced_animation"
+
+    if is_advanced and not input_image:
+        _handle_error(click.UsageError("Advanced animation styles require --input-image."))
 
     if size:
         width, height = _parse_size(size)
@@ -234,6 +251,7 @@ def animate(
         return_spritesheet=spritesheet or None,
         remove_bg=remove_bg,
         input_image=input_b64,
+        frames_duration=int(frames_duration) if frames_duration else None,
     )
 
     try:
@@ -422,7 +440,7 @@ def styles() -> None:
 
 
 @styles.command("list")
-@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "rd_tile", "animation"]), default=None)
+@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "rd_tile", "animation", "rd_advanced_animation"]), default=None)
 def styles_list(model: str | None) -> None:
     """List available built-in styles."""
     for s in list_styles(model):

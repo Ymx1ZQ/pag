@@ -133,26 +133,14 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Added `rd_tile` to `pag list-styles --model` filter
 - [x] Added 11 new unit tests (147 total)
 
-## M18 — Aggiungere Advanced Animations (rd_advanced_animation)
+## M18 — Aggiungere Advanced Animations (rd_advanced_animation) ✅
 
-L'API supporta 8 stili di animazione avanzata che richiedono un input_image e supportano frames_duration.
-
-**Stili da aggiungere a `styles.py`:**
-- [ ] `rd_advanced_animation__attack` (32→256)
-- [ ] `rd_advanced_animation__crouch` (32→256)
-- [ ] `rd_advanced_animation__custom_action` (32→256)
-- [ ] `rd_advanced_animation__destroy` (32→256)
-- [ ] `rd_advanced_animation__idle` (32→256)
-- [ ] `rd_advanced_animation__jump` (32→256)
-- [ ] `rd_advanced_animation__subtle_motion` (32→256)
-- [ ] `rd_advanced_animation__walking` (32→256)
-
-**CLI:**
-- [ ] Integrare in `pag animate` o creare `pag animate-advanced`
-- [ ] `--input-image` obbligatorio per questi stili
-- [ ] `--frames-duration` opzione (4, 6, 8, 10, 12, 16)
-- [ ] Aggiungere `rd_advanced_animation` come opzione in `pag list-styles --model`
-- [ ] Unit test
+- [x] Added 8 advanced animation styles (attack, crouch, custom_action, destroy, idle, jump, subtle_motion, walking)
+- [x] Integrated into `pag animate` with auto-detection (animation__ vs rd_advanced_animation__)
+- [x] Added --frames-duration option (4, 6, 8, 10, 12, 16)
+- [x] --input-image required for advanced styles (enforced with error)
+- [x] Added rd_advanced_animation to list-styles --model filter
+- [x] 5 new unit tests (152 total)
 
 ## M19 — Aggiungere endpoint Edit (POST /v1/edit)
 

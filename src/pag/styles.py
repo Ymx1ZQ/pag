@@ -167,9 +167,28 @@ ANIMATION_STYLES: list[StyleInfo] = [
     _anim("vfx", 24, 24, max_w=96, max_h=96, label="VFX", square_only=True),
 ]
 
+RD_ADVANCED_ANIMATION_STYLES: list[StyleInfo] = [
+    StyleInfo(key="rd_advanced_animation__attack", model="rd_advanced_animation",
+             label="Attack", min_w=32, max_w=256, min_h=32, max_h=256),
+    StyleInfo(key="rd_advanced_animation__crouch", model="rd_advanced_animation",
+             label="Crouch", min_w=32, max_w=256, min_h=32, max_h=256),
+    StyleInfo(key="rd_advanced_animation__custom_action", model="rd_advanced_animation",
+             label="Custom Action", min_w=32, max_w=256, min_h=32, max_h=256),
+    StyleInfo(key="rd_advanced_animation__destroy", model="rd_advanced_animation",
+             label="Destroy", min_w=32, max_w=256, min_h=32, max_h=256),
+    StyleInfo(key="rd_advanced_animation__idle", model="rd_advanced_animation",
+             label="Idle", min_w=32, max_w=256, min_h=32, max_h=256),
+    StyleInfo(key="rd_advanced_animation__jump", model="rd_advanced_animation",
+             label="Jump", min_w=32, max_w=256, min_h=32, max_h=256),
+    StyleInfo(key="rd_advanced_animation__subtle_motion", model="rd_advanced_animation",
+             label="Subtle Motion", min_w=32, max_w=256, min_h=32, max_h=256),
+    StyleInfo(key="rd_advanced_animation__walking", model="rd_advanced_animation",
+             label="Walking", min_w=32, max_w=256, min_h=32, max_h=256),
+]
+
 ALL_STYLES: list[StyleInfo] = (
     RD_PRO_STYLES + RD_FAST_STYLES + RD_PLUS_STYLES
-    + RD_TILE_STYLES + ANIMATION_STYLES
+    + RD_TILE_STYLES + ANIMATION_STYLES + RD_ADVANCED_ANIMATION_STYLES
 )
 
 _STYLE_MAP: dict[str, StyleInfo] = {s.key: s for s in ALL_STYLES}

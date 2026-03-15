@@ -34,15 +34,15 @@
   - [x] `{n}` = image index (0-based), only appended when `num_images > 1` or pattern explicitly includes it
 - [x] Unit tests for output and filename resolution
 
-## M5 — CLI
+## M5 — CLI ✅
 
-- [ ] Implement `cli.py` with Click:
-  - [ ] `pag generate` — prompt, --style, --size, -n, --seed, --ref, --tile-x, --tile-y, --remove-bg, -o, --stdout, --format, --api-key
-  - [ ] `pag animate` — prompt, --style, --size, --spritesheet, -o, --api-key
-  - [ ] `pag cost` — prompt, --style, --size, -n
-  - [ ] `pag styles list|create|update|delete`
-  - [ ] `pag --version`, `pag --list-styles`
-- [ ] Unit tests for CLI (click.testing.CliRunner)
+- [x] Implement `cli.py` with Click:
+  - [x] `pag generate` — prompt, --style, --size, -n, --seed, --ref, --tile-x, --tile-y, --remove-bg, -o, -d, --name-pattern, --stdout, --api-key
+  - [x] `pag animate` — prompt, --style, --size, --spritesheet, -o, -d, --name-pattern, --stdout, --api-key
+  - [x] `pag cost` — prompt, --style, --size, -n
+  - [x] `pag styles list|create|update|delete`
+  - [x] `pag --version`, `pag list-styles [--model]`
+- [x] Unit tests for CLI (click.testing.CliRunner) — 21 tests
 
 ## M6 — Live tests
 

@@ -4,14 +4,15 @@
 
 ## Features
 
-- Generate pixel art from text prompts with 50+ style presets
-- Three model tiers: RD_PRO (high quality), RD_FAST (speed), RD_PLUS (extended styles)
+- Generate pixel art from text prompts with 60+ style presets
+- Three model tiers: **RD_PRO** (high quality), **RD_FAST** (speed), **RD_PLUS** (extended styles)
 - Sprite sheet and GIF animation generation (walking, idle, VFX, rotations)
 - Reference image support (up to 9 images for RD_PRO)
 - Seamless tiling (X/Y axis)
 - Background removal
 - Custom style management (create, update, delete)
 - Cost estimation before generating
+- Flexible output naming: exact path, directory + auto-name, or custom pattern
 - Installs globally via [uv](https://docs.astral.sh/uv/)
 
 ## Requirements
@@ -20,7 +21,30 @@
 - Ubuntu 25.10+ (or any Linux with uv support)
 - A [Retro Diffusion API key](https://retrodiffusion.ai/)
 
+## Quickstart
+
+```bash
+# 1. Clone and install
+git clone git@github.com:Ymx1ZQ/pag.git
+cd pag
+chmod +x install.sh
+./install.sh
+
+# 2. Set your API key
+export RETRODIFFUSION_API_KEY=your_key_here
+
+# 3. Generate your first pixel art image
+pag generate "a cute red mushroom" --style rd_fast__simple --size 64x64
+
+# 4. Check the output — the PNG is saved in your current directory
+ls *.png
+```
+
+That's it! The image is saved as `a_cute_red_mushroom_<timestamp>.png` in your current directory.
+
 ## Installation
+
+### Via install.sh (recommended)
 
 ```bash
 git clone git@github.com:Ymx1ZQ/pag.git
@@ -30,9 +54,10 @@ chmod +x install.sh
 ```
 
 The install script will:
-1. Install `uv` if not already present
-2. Install `pag` as a global CLI tool via `uv tool install`
-3. Verify the installation with `pag --version`
+1. Check that Python 3.12+ is installed
+2. Install `uv` if not already present
+3. Install `pag` as a global CLI tool via `uv tool install`
+4. Verify the installation with `pag --version`
 
 ### Manual installation
 
@@ -44,38 +69,60 @@ uv tool install .
 
 Set your API key in one of these ways (in order of precedence):
 
-1. CLI flag: `--api-key <key>`
-2. Environment variable: `export RETRODIFFUSION_API_KEY=your_key`
-3. `.env` file in the current directory
+| Method | Example |
+|--------|---------|
+| CLI flag | `pag generate "a cat" --style rd_pro__default --api-key YOUR_KEY` |
+| Environment variable | `export RETRODIFFUSION_API_KEY=your_key` |
+| `.env` file | Create a `.env` file with `RETRODIFFUSION_API_KEY=your_key` |
 
 ## Usage
 
-### Generate pixel art
+### `pag generate` — Generate pixel art
+
+Generate one or more pixel art images from a text prompt.
 
 ```bash
-# Basic generation
+# Basic generation (uses style's default size)
+pag generate "a cool corgi" --style rd_pro__default
+
+# Specify exact size
 pag generate "a cool corgi" --style rd_pro__default --size 128x128
 
-# Multiple images with seed
+# Multiple images with a fixed seed
 pag generate "dungeon tileset" --style rd_pro__dungeon_map -n 4 --seed 42
 
 # With background removal
 pag generate "sword icon" --style rd_fast__item_sheet --size 64x64 --remove-bg
 
-# With reference images
+# With reference images (RD_PRO supports up to 9)
 pag generate "a warrior" --style rd_pro__fantasy --ref image1.png --ref image2.png
 
-# Seamless tiling
+# Seamless tiling (for textures)
 pag generate "grass texture" --style rd_pro__default --tile-x --tile-y
-
-# Custom output directory
-pag generate "a cat" --style rd_pro__default -o ./output/
-
-# Pipe base64 to stdout
-pag generate "a cat" --style rd_pro__default --stdout
 ```
 
-### Animations
+**All `generate` options:**
+
+| Option | Description |
+|--------|-------------|
+| `PROMPT` | Text description of the image (required) |
+| `--style` | Style key, e.g. `rd_pro__default` (required). See `pag list-styles` |
+| `--size WxH` | Image dimensions, e.g. `128x128`. Defaults to style minimum |
+| `-n, --num-images` | Number of images to generate (default: 1) |
+| `--seed` | Seed for generation |
+| `--ref PATH` | Reference image file (repeatable) |
+| `--tile-x` | Enable horizontal seamless tiling |
+| `--tile-y` | Enable vertical seamless tiling |
+| `--remove-bg` | Remove image background |
+| `-o, --output` | Exact output file path |
+| `-d, --output-dir` | Output directory (auto-names files) |
+| `--name-pattern` | Custom filename template (see [Filename patterns](#filename-patterns)) |
+| `--stdout` | Write base64 to stdout instead of saving files |
+| `--api-key` | Override API key for this command |
+
+### `pag animate` — Generate animations
+
+Generate animated sprites as GIF or PNG spritesheet.
 
 ```bash
 # Walking + idle animation (outputs GIF)
@@ -84,50 +131,125 @@ pag animate "walking knight" --style walking_and_idle
 # As spritesheet (outputs PNG)
 pag animate "walking knight" --style walking_and_idle --spritesheet
 
-# VFX animation
+# VFX animation with custom size
 pag animate "fire effect" --style vfx --size 48x48
 ```
 
-Available animation styles:
-- `any_animation` — 64x64, generic animation
-- `8_dir_rotation` — 80x80, 8-direction rotation
-- `four_angle_walking` — 48x48, 4-angle walk cycle
-- `walking_and_idle` — 48x48, walk + idle
-- `small_sprites` — 32x32, small animated sprites
-- `vfx` — 24x24 to 96x96, visual effects
+You can use either the short name (`walking_and_idle`) or the full key (`animation__walking_and_idle`).
 
-### Cost estimation
+**Available animation styles:**
+
+| Style | Default size | Description |
+|-------|-------------|-------------|
+| `any_animation` | 64x64 | Generic animation |
+| `8_dir_rotation` | 80x80 | 8-direction rotation |
+| `four_angle_walking` | 48x48 | 4-angle walk cycle |
+| `walking_and_idle` | 48x48 | Walk + idle |
+| `small_sprites` | 32x32 | Small animated sprites |
+| `vfx` | 24x24 → 96x96 | Visual effects (square only) |
+
+**All `animate` options:**
+
+| Option | Description |
+|--------|-------------|
+| `PROMPT` | Text description (required) |
+| `--style` | Animation style (required) |
+| `--size WxH` | Override default size |
+| `--spritesheet` | Output PNG spritesheet instead of GIF |
+| `-o, --output` | Exact output file path |
+| `-d, --output-dir` | Output directory |
+| `--name-pattern` | Custom filename template |
+| `--stdout` | Write base64 to stdout |
+| `--api-key` | Override API key |
+
+### `pag cost` — Estimate credit cost
+
+Check how many credits a generation would cost without actually generating images.
 
 ```bash
 pag cost "a cool corgi" --style rd_pro__default --size 128x128
+pag cost "tileset" --style rd_pro__dungeon_map -n 4
 ```
 
-Outputs the credit cost without generating any image.
+**Options:** `PROMPT`, `--style`, `--size`, `-n`, `--api-key`
 
-### Custom styles
+### `pag list-styles` — Browse available styles
+
+List all built-in styles with their size ranges.
 
 ```bash
-# List your custom styles
-pag styles list
+# All styles
+pag list-styles
 
+# Filter by model
+pag list-styles --model rd_pro
+pag list-styles --model rd_fast
+pag list-styles --model rd_plus
+pag list-styles --model animation
+```
+
+### `pag styles` — Manage custom styles
+
+Create, update, and delete custom RD_PRO styles.
+
+```bash
 # Create a new custom style
-pag styles create --name "my style" --description "A dark fantasy style" --ref reference.png
+pag styles create --name "my style" --description "A dark fantasy style" --ref reference.png --icon skull
 
 # Update a style
-pag styles update <style_id> --name "renamed style"
+pag styles update <style_id> --name "renamed style" --description "Updated description"
 
 # Delete a style
 pag styles delete <style_id>
+
+# List built-in styles (same as pag list-styles)
+pag styles list
 ```
 
-### Other options
+**`styles create` options:**
+
+| Option | Description |
+|--------|-------------|
+| `--name` | Style name (required) |
+| `--description` | Style description |
+| `--ref PATH` | Reference image file |
+| `--icon` | Icon name (e.g. `skull`, `sparkles`, `fire`, `sword`) |
+| `--api-key` | Override API key |
+
+### Filename patterns
+
+Control how output files are named using `--name-pattern` with these placeholders:
+
+| Placeholder | Description |
+|-------------|-------------|
+| `{prompt_slug}` | First 48 chars of prompt, lowercased, special chars → `_` |
+| `{prompt}` | Same as `{prompt_slug}` |
+| `{style}` | Style key with `__` replaced by `_` |
+| `{seed}` | Seed value, or `noseed` if not set |
+| `{n}` | Image index (0-based) |
+| `{timestamp}` | Unix timestamp |
+
+**Examples:**
 
 ```bash
-pag --version          # Show version
-pag --help             # Show help
-pag generate --help    # Show help for generate subcommand
-pag --list-styles      # List all available built-in styles
+# Custom pattern
+pag generate "a cat" --style rd_pro__default --name-pattern "{prompt_slug}_{style}_{seed}"
+# → a_cat_rd_pro_default_noseed.png
+
+# Exact output path
+pag generate "a cat" --style rd_pro__default -o my_cat.png
+# → my_cat.png
+
+# Output to directory with auto-naming
+pag generate "a cat" --style rd_pro__default -d ./output/
+# → ./output/a_cat_1700000000.png
+
+# Multiple images get index suffix automatically
+pag generate "gems" --style rd_pro__default -n 3 -d ./output/
+# → ./output/gems_1700000000_0.png, gems_1700000000_1.png, gems_1700000000_2.png
 ```
+
+**Default pattern:** `{prompt_slug}_{timestamp}.png` (single image) or `{prompt_slug}_{timestamp}_{n}.png` (multiple). Animations use `.gif` unless `--spritesheet` is set.
 
 ## Available styles
 
@@ -156,14 +278,14 @@ uv sync
 ### Running tests
 
 ```bash
-# Unit tests only
-uv run pytest tests/unit/
+# Unit tests only (no API key needed)
+uv run pytest tests/unit/ -v
 
 # Live tests (requires RETRODIFFUSION_API_KEY)
-uv run pytest tests/live/
+uv run pytest tests/live/ -v
 
 # All tests
-uv run pytest
+uv run pytest -v
 ```
 
 Live tests are automatically skipped when `RETRODIFFUSION_API_KEY` is not set.
@@ -172,21 +294,21 @@ Live tests are automatically skipped when `RETRODIFFUSION_API_KEY` is not set.
 
 ```
 pag/
-├── pyproject.toml          # Package config (uv/pip compatible)
+├── pyproject.toml          # Package metadata and dependencies
 ├── install.sh              # Global CLI installer
 ├── src/
 │   └── pag/
-│       ├── __init__.py
+│       ├── __init__.py     # Version
 │       ├── __main__.py     # python -m pag entry point
-│       ├── cli.py          # Click-based CLI
+│       ├── cli.py          # Click-based CLI (generate, animate, cost, styles)
 │       ├── client.py       # Retro Diffusion API client (httpx)
 │       ├── models.py       # Pydantic request/response models
 │       ├── styles.py       # Style registry and validation
 │       ├── config.py       # API key resolution
-│       └── output.py       # Base64 decoding and file saving
+│       └── output.py       # Base64 decoding, file saving, filename resolution
 ├── tests/
-│   ├── unit/               # Mocked tests, no API calls
-│   └── live/               # Real API tests, need API key
+│   ├── unit/               # 82 tests — mocked, no API calls
+│   └── live/               # 10 tests — real API, need RETRODIFFUSION_API_KEY
 ```
 
 ### Dependencies
@@ -198,7 +320,7 @@ pag/
 | `pydantic` | Input/output validation |
 | `python-dotenv` | `.env` file loading |
 
-Dev dependencies: `pytest`, `pytest-mock`, `respx`
+Dev: `pytest`, `pytest-mock`, `respx`
 
 ## License
 

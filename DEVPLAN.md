@@ -54,8 +54,8 @@
 
 Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allowed. `styles list` now shows built-in styles instead. Seed reproducibility test relaxed — API does not guarantee identical output for same seed.
 
-## M7 — Install script and final polish
+## M7 — Install script and final polish ✅
 
-- [ ] Finalize `install.sh` — uv detection/install, `uv tool install .`, verification
-- [ ] Test install flow on clean environment
-- [ ] Verify all unit and live tests pass
+- [x] Finalize `install.sh` — Python 3.12+ check, uv detection/install, `uv tool install .`, verification
+- [x] Comprehensive README with quickstart, all commands/options documented, filename patterns
+- [x] Verify all unit (82) and live (10) tests pass

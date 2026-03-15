@@ -30,7 +30,7 @@ fi
 
 # 3. Install pag as a global CLI tool
 echo "Installing pag..."
-uv tool install --force .
+uv tool install --force --reinstall .
 
 # 4. Verify
 if pag --version; then

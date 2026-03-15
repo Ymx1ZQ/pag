@@ -178,6 +178,53 @@ def test_generate_multiple_images(mock_key, mock_client_cls, runner, tmp_path):
     assert result.output.count("Saved:") == 2
 
 
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_generate_img2img(mock_key, mock_client_cls, runner, tmp_path):
+    img = tmp_path / "input.png"
+    img.write_bytes(b"fake image")
+
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "generate", "cool corgi",
+        "--style", "rd_pro__default",
+        "--input-image", str(img),
+        "--strength", "0.8",
+        "-o", str(tmp_path / "out.png"),
+    ])
+    assert result.exit_code == 0
+    req = mock_client.infer.call_args[0][0]
+    assert req.input_image is not None
+    assert req.strength == 0.8
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_generate_advanced_flags(mock_key, mock_client_cls, runner, tmp_path):
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "generate", "corgi",
+        "--style", "rd_pro__default",
+        "--bypass-prompt-expansion",
+        "--upscale-output-factor", "1",
+        "-o", str(tmp_path / "out.png"),
+    ])
+    assert result.exit_code == 0
+    req = mock_client.infer.call_args[0][0]
+    assert req.bypass_prompt_expansion is True
+    assert req.upscale_output_factor == 1
+
+
 # ── animate ──────────────────────────────────────────────────────────────────
 
 

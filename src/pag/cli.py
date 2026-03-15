@@ -83,6 +83,14 @@ def list_styles_cmd(model: str | None) -> None:
 @click.option("--tile-x", is_flag=True, help="Enable horizontal tiling.")
 @click.option("--tile-y", is_flag=True, help="Enable vertical tiling.")
 @click.option("--remove-bg", is_flag=True, help="Remove background.")
+@click.option("--input-image", default=None, type=click.Path(exists=True), help="Input image for img2img.")
+@click.option("--strength", default=None, type=float, help="img2img strength (0.0–1.0).")
+@click.option("--input-palette", default=None, type=click.Path(exists=True), help="Palette reference image.")
+@click.option("--return-pre-palette", is_flag=True, help="Also return the image before palette application.")
+@click.option("--bypass-prompt-expansion", is_flag=True, help="Disable prompt expansion.")
+@click.option("--upscale-output-factor", default=None, type=int, help="Output scale factor (1 = native).")
+@click.option("--include-downloadable-data", is_flag=True, help="Include downloadable data in response.")
+@click.option("--return-non-bg-removed", is_flag=True, help="Also return the image before bg removal.")
 @click.option("-o", "--output", default=None, help="Output file path (exact).")
 @click.option("-d", "--output-dir", default=None, type=click.Path(), help="Output directory.")
 @click.option("--name-pattern", default=None, help="Filename pattern with {prompt_slug}, {style}, {seed}, {n}, {timestamp}.")
@@ -99,6 +107,14 @@ def generate(
     tile_x: bool,
     tile_y: bool,
     remove_bg: bool,
+    input_image: str | None,
+    strength: float | None,
+    input_palette: str | None,
+    return_pre_palette: bool,
+    bypass_prompt_expansion: bool,
+    upscale_output_factor: int | None,
+    include_downloadable_data: bool,
+    return_non_bg_removed: bool,
     output: str | None,
     output_dir: str | None,
     name_pattern: str | None,
@@ -128,6 +144,8 @@ def generate(
         _handle_error(e)
 
     ref_images = [_read_ref_image(r) for r in ref] if ref else None
+    input_b64 = _read_ref_image(input_image) if input_image else None
+    palette_b64 = _read_ref_image(input_palette) if input_palette else None
 
     req = InferenceRequest(
         prompt=prompt,
@@ -140,6 +158,14 @@ def generate(
         tile_x=tile_x,
         tile_y=tile_y,
         remove_bg=remove_bg,
+        input_image=input_b64,
+        strength=strength,
+        input_palette=palette_b64,
+        return_pre_palette=return_pre_palette or None,
+        bypass_prompt_expansion=bypass_prompt_expansion or None,
+        upscale_output_factor=upscale_output_factor,
+        include_downloadable_data=include_downloadable_data or None,
+        return_non_bg_removed=return_non_bg_removed or None,
     )
 
     try:

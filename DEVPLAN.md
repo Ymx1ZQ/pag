@@ -155,18 +155,13 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Added `pag balance` CLI command
 - [x] 1 new unit test (156 total)
 
-## M21 — Aggiungere opzioni CLI mancanti per generate
+## M21 — Aggiungere opzioni CLI mancanti per generate ✅
 
-Esporre i parametri API aggiunti in M15 come opzioni CLI in `pag generate`.
-
-- [ ] `--input-image PATH` + `--strength FLOAT` (img2img)
-- [ ] `--input-palette PATH` (palette reference)
-- [ ] `--bypass-prompt-expansion` (flag)
-- [ ] `--upscale-output-factor INT` (1 = nativo)
-- [ ] `--include-downloadable-data` (flag, salva JSON aggiuntivo)
-- [ ] `--return-non-bg-removed` (flag, salva anche l'immagine senza bg removal)
-- [ ] `--return-pre-palette` (flag, salva anche l'immagine pre-palette)
-- [ ] Unit test
+- [x] Added --input-image + --strength (img2img)
+- [x] Added --input-palette + --return-pre-palette
+- [x] Added --bypass-prompt-expansion, --upscale-output-factor
+- [x] Added --include-downloadable-data, --return-non-bg-removed
+- [x] 2 new unit tests (158 total)
 
 ## M22 — Audit e fix README finale
 

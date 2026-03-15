@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner
 
+import pag.config as config_module
 from pag.cli import main, _parse_size
 from pag.models import InferenceResponse
 
@@ -304,3 +305,52 @@ def test_styles_delete(mock_key, mock_client_cls, runner):
     ])
     assert result.exit_code == 0
     assert "Deleted style:" in result.output
+
+
+# ── config subcommands ───────────────────────────────────────────────────────
+
+
+def test_config_set_key_with_arg(runner, tmp_path, monkeypatch):
+    fake_dir = tmp_path / ".pag"
+    monkeypatch.setattr(config_module, "CONFIG_DIR", fake_dir)
+    monkeypatch.setattr(config_module, "CONFIG_ENV", fake_dir / ".env")
+
+    result = runner.invoke(main, ["config", "set-key", "my_test_key"])
+    assert result.exit_code == 0
+    assert "API key saved" in result.output
+    assert (fake_dir / ".env").exists()
+
+
+def test_config_set_key_interactive(runner, tmp_path, monkeypatch):
+    fake_dir = tmp_path / ".pag"
+    monkeypatch.setattr(config_module, "CONFIG_DIR", fake_dir)
+    monkeypatch.setattr(config_module, "CONFIG_ENV", fake_dir / ".env")
+
+    result = runner.invoke(main, ["config", "set-key"], input="my_secret_key\n")
+    assert result.exit_code == 0
+    assert "API key saved" in result.output
+
+
+def test_config_show_configured(runner, tmp_path, monkeypatch):
+    fake_dir = tmp_path / ".pag"
+    fake_env = fake_dir / ".env"
+    monkeypatch.setattr(config_module, "CONFIG_DIR", fake_dir)
+    monkeypatch.setattr(config_module, "CONFIG_ENV", fake_env)
+
+    fake_dir.mkdir()
+    fake_env.write_text("RETRODIFFUSION_API_KEY=rdpk-abcdef1234567890\n")
+
+    result = runner.invoke(main, ["config", "show"])
+    assert result.exit_code == 0
+    assert "rdpk" in result.output
+    assert "7890" in result.output
+
+
+def test_config_show_not_configured(runner, tmp_path, monkeypatch):
+    fake_dir = tmp_path / ".pag"
+    monkeypatch.setattr(config_module, "CONFIG_DIR", fake_dir)
+    monkeypatch.setattr(config_module, "CONFIG_ENV", fake_dir / ".env")
+
+    result = runner.invoke(main, ["config", "show"])
+    assert result.exit_code == 0
+    assert "No API key configured" in result.output

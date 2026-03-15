@@ -67,3 +67,13 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Il verbose tronca i campi base64 (reference_images, base64_images) per leggibilità
 - [x] Unit tests per spinner e verbose (12 test)
 - [x] Aggiornare README
+
+## M9 — API key management ✅
+
+- [x] Update `config.py` — key resolution: `--api-key` flag > `~/.pag/.env` (removed env var and cwd .env)
+- [x] Add `save_api_key(key)`, `get_saved_key()`, `mask_key()` to config module
+- [x] Interactive prompt in `install.sh` — asks to configure API key after install, handles existing key with `[y/N]` confirmation
+- [x] Add `pag config set-key` — interactive or with argument
+- [x] Add `pag config show` — shows masked key and source
+- [x] Unit tests for config resolution, save, mask, CLI config commands
+- [x] Update README — configuration section, quickstart

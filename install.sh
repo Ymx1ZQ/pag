@@ -33,15 +33,41 @@ echo "Installing pag..."
 uv tool install --force --reinstall .
 
 # 4. Verify
-if pag --version; then
-    echo "=== pag installed successfully ==="
-    echo ""
-    echo "Get started:"
-    echo "  export RETRODIFFUSION_API_KEY=your_key"
-    echo "  pag generate \"a cool corgi\" --style rd_fast__simple --size 64x64"
-else
+if ! pag --version; then
     echo "ERROR: pag --version failed." >&2
     echo "Make sure ~/.local/bin is in your PATH:" >&2
     echo "  export PATH=\"\$HOME/.local/bin:\$PATH\"" >&2
     exit 1
 fi
+
+echo "=== pag installed successfully ==="
+
+# 5. Configure API key if not already set
+if [ -f "$HOME/.pag/.env" ] && grep -q "RETRODIFFUSION_API_KEY=." "$HOME/.pag/.env" 2>/dev/null; then
+    echo "API key already configured in ~/.pag/.env"
+    read -rp "Do you want to replace it? [y/N] " answer
+    answer=${answer:-N}
+    if [[ "$answer" =~ ^[Yy] ]]; then
+        read -rsp "Enter your new API key: " api_key
+        echo ""
+        echo "RETRODIFFUSION_API_KEY=$api_key" > "$HOME/.pag/.env"
+        echo "API key updated in ~/.pag/.env"
+    fi
+else
+    echo ""
+    read -rp "Do you want to configure your Retro Diffusion API key now? [Y/n] " answer
+    answer=${answer:-Y}
+    if [[ "$answer" =~ ^[Yy] ]]; then
+        read -rsp "Enter your API key: " api_key
+        echo ""
+        mkdir -p "$HOME/.pag"
+        echo "RETRODIFFUSION_API_KEY=$api_key" > "$HOME/.pag/.env"
+        echo "API key saved to ~/.pag/.env"
+    else
+        echo "Skipped. You can set it later with: pag config set-key"
+    fi
+fi
+
+echo ""
+echo "Get started:"
+echo "  pag generate \"a cool corgi\" --style rd_fast__simple --size 64x64"

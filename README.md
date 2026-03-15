@@ -30,8 +30,8 @@ cd pag
 chmod +x install.sh
 ./install.sh
 
-# 2. Set your API key
-export RETRODIFFUSION_API_KEY=your_key_here
+# 2. Set your API key (the installer will ask, or do it manually)
+pag config set-key
 
 # 3. Generate your first pixel art image
 pag generate "a cute red mushroom" --style rd_fast__simple --size 64x64
@@ -73,13 +73,26 @@ uv tool install .
 
 ## Configuration
 
-Set your API key in one of these ways (in order of precedence):
+Your API key is stored in `~/.pag/.env`. The installer will prompt you to set it up, or you can do it anytime:
 
-| Method | Example |
-|--------|---------|
-| CLI flag | `pag generate "a cat" --style rd_pro__default --api-key YOUR_KEY` |
-| Environment variable | `export RETRODIFFUSION_API_KEY=your_key` |
-| `.env` file | Create a `.env` file with `RETRODIFFUSION_API_KEY=your_key` |
+```bash
+# Interactive (hides input)
+pag config set-key
+
+# Or pass it directly
+pag config set-key YOUR_KEY
+
+# Check current configuration
+pag config show
+```
+
+You can also override the saved key for a single command with `--api-key`:
+
+```bash
+pag generate "a cat" --style rd_pro__default --api-key OTHER_KEY
+```
+
+Resolution order: `--api-key` flag > `~/.pag/.env`
 
 ## Usage
 

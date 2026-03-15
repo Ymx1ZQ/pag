@@ -10,7 +10,7 @@ import click
 
 from pag import __version__
 from pag.client import APIError, RetroClient
-from pag.config import ConfigError, resolve_api_key
+from pag.config import ConfigError, get_saved_key, mask_key, resolve_api_key, save_api_key
 from pag.models import InferenceRequest, StyleCreateRequest, StyleUpdateRequest
 from pag.output import decode_and_save, resolve_filename, write_stdout
 from pag.styles import get_style, list_styles, validate_size
@@ -394,3 +394,35 @@ def styles_delete(style_id: str, api_key: str | None) -> None:
         _handle_error(e)
 
     click.echo(f"Deleted style: {style_id}")
+
+
+# ── config ───────────────────────────────────────────────────────────────────
+
+
+@main.group()
+def config() -> None:
+    """Manage pag configuration."""
+
+
+@config.command("set-key")
+@click.argument("key", required=False)
+def config_set_key(key: str | None) -> None:
+    """Save your API key to ~/.pag/.env.
+
+    Pass the key as argument, or omit it for an interactive prompt.
+    """
+    if not key:
+        key = click.prompt("Enter your Retro Diffusion API key", hide_input=True)
+    path = save_api_key(key)
+    click.echo(f"API key saved to {path}")
+
+
+@config.command("show")
+def config_show() -> None:
+    """Show the current API key configuration."""
+    saved = get_saved_key()
+    if saved:
+        click.echo(f"API key: {mask_key(saved)}")
+        click.echo(f"Source:  ~/.pag/.env")
+    else:
+        click.echo("No API key configured. Run `pag config set-key` to set one.")

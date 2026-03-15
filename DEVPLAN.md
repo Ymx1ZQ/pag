@@ -1,13 +1,13 @@
 # pag — Development Plan
 
-## M1 — Project scaffolding
+## M1 — Project scaffolding ✅
 
-- [ ] Create `pyproject.toml` with metadata, dependencies, and `[project.scripts]` entry point
-- [ ] Create `src/pag/__init__.py` with version
-- [ ] Create `src/pag/__main__.py`
-- [ ] Create `install.sh`
-- [ ] Create `.env.example`
-- [ ] Verify `uv sync` and `uv run pag --version` work
+- [x] Create `pyproject.toml` with metadata, dependencies, and `[project.scripts]` entry point
+- [x] Create `src/pag/__init__.py` with version
+- [x] Create `src/pag/__main__.py`
+- [x] Create `install.sh`
+- [x] Create `.env.example`
+- [x] Verify `uv sync` and `uv run pag --version` work
 
 ## M2 — Configuration and models
 
@@ -24,8 +24,15 @@
 
 ## M4 — Output handling
 
-- [ ] Implement `output.py` — base64 decode, save PNG/GIF, auto-naming, `--output-dir` support, `--stdout` mode
-- [ ] Unit tests for output
+- [ ] Implement `output.py` — base64 decode, save PNG/GIF, `--stdout` mode
+- [ ] Filename resolution logic:
+  - [ ] `--output` / `-o` → exact file path (e.g. `pag generate "cat" -o cat.png`)
+  - [ ] `--output-dir` / `-d` → directory with auto-generated name
+  - [ ] `--name-pattern` → custom template using `{prompt}`, `{style}`, `{seed}`, `{n}`, `{timestamp}` placeholders
+  - [ ] Default pattern: `{prompt_slug}_{timestamp}_{n}.png` (`.gif` for animations)
+  - [ ] `{prompt_slug}` = first 48 chars of prompt, lowercased, non-alnum replaced with `_`, trailing `_` stripped
+  - [ ] `{n}` = image index (0-based), only appended when `num_images > 1` or pattern explicitly includes it
+- [ ] Unit tests for output and filename resolution
 
 ## M5 — CLI
 

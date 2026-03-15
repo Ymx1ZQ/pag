@@ -90,6 +90,24 @@ class RetroClient:
         data = self._post("/inferences", body, spinner_msg=msg)
         return InferenceResponse.model_validate(data)
 
+    # ── balance ──────────────────────────────────────────────────────────
+
+    def get_balance(self) -> float:
+        """GET /v1/inferences/credits — return remaining balance."""
+        if self._verbose:
+            dump_payload("Request GET /inferences/credits", {})
+
+        with Spinner("Checking balance"):
+            resp = self._client.get("/inferences/credits")
+
+        self._raise_for_status(resp)
+        data = resp.json()
+
+        if self._verbose:
+            dump_payload(f"Response {resp.status_code}", data)
+
+        return data["balance"]
+
     # ── edit ──────────────────────────────────────────────────────────────
 
     def edit(self, request: EditRequest) -> EditResponse:

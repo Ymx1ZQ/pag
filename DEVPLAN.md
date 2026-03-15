@@ -149,13 +149,11 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Added `pag edit` CLI command with -o, -d, --name-pattern, --stdout, --open
 - [x] 3 new unit tests (155 total)
 
-## M20 — Aggiungere endpoint Balance (GET /v1/inferences/credits)
+## M20 — Aggiungere endpoint Balance (GET /v1/inferences/credits) ✅
 
-L'API permette di controllare il saldo crediti.
-
-- [ ] Aggiungere metodo `get_balance()` a `RetroClient`
-- [ ] Aggiungere comando `pag balance` al CLI
-- [ ] Unit test
+- [x] Added get_balance() method to RetroClient
+- [x] Added `pag balance` CLI command
+- [x] 1 new unit test (156 total)
 
 ## M21 — Aggiungere opzioni CLI mancanti per generate
 

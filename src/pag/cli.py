@@ -601,6 +601,28 @@ def styles_delete(style_id: str, api_key: str | None) -> None:
     click.echo(f"Deleted style: {style_id}")
 
 
+# ── balance ──────────────────────────────────────────────────────────────────
+
+
+@main.command()
+@click.option("--api-key", default=None, envvar="RETRODIFFUSION_API_KEY", help="API key.")
+def balance(api_key: str | None) -> None:
+    """Check your remaining credit balance."""
+    verbose = click.get_current_context().obj.get("verbose", False)
+    try:
+        key = resolve_api_key(api_key)
+    except ConfigError as e:
+        _handle_error(e)
+
+    try:
+        with RetroClient(key, verbose=verbose) as client:
+            bal = client.get_balance()
+    except APIError as e:
+        _handle_error(e)
+
+    click.echo(f"Balance: {bal} credits")
+
+
 # ── config ───────────────────────────────────────────────────────────────────
 
 

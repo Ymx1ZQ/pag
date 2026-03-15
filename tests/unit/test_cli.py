@@ -517,6 +517,23 @@ def test_styles_delete(mock_key, mock_client_cls, runner):
     assert "Deleted style:" in result.output
 
 
+# ── balance ─────────────────────────────────────────────────────────────────
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_balance(mock_key, mock_client_cls, runner):
+    mock_client = MagicMock()
+    mock_client.get_balance.return_value = 42.75
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, ["balance"])
+    assert result.exit_code == 0
+    assert "42.75" in result.output
+
+
 # ── config subcommands ───────────────────────────────────────────────────────
 
 

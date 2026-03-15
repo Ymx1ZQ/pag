@@ -5,13 +5,17 @@
 ## Features
 
 - Generate pixel art from text prompts with 60+ style presets
-- Three model tiers: **RD_PRO** (high quality), **RD_FAST** (speed), **RD_PLUS** (extended styles)
-- Sprite sheet and GIF animation generation (walking, idle, VFX, rotations)
+- Six model tiers: **RD_PRO**, **RD_FAST**, **RD_PLUS**, **RD_TILE** (tilesets), **Animation**, **Advanced Animation**
+- Sprite sheet and GIF animation generation (walking, idle, VFX, rotations, advanced character animations)
+- Tileset generation (full tilesets, single tiles, variations, objects)
+- Image editing with text prompts (`pag edit`)
+- img2img transformation with strength control
+- Palette reference for color guidance
 - Reference image support (up to 9 images for RD_PRO)
 - Seamless tiling (X/Y axis)
 - Background removal
 - Custom style management (create, update, delete)
-- Cost estimation before generating
+- Cost estimation and balance checking
 - Flexible output naming: exact path, directory + auto-name, or custom pattern
 - Installs globally via [uv](https://docs.astral.sh/uv/)
 
@@ -118,6 +122,18 @@ pag generate "a warrior" --style rd_pro__fantasy --ref image1.png --ref image2.p
 
 # Seamless tiling (for textures)
 pag generate "grass texture" --style rd_pro__default --tile-x --tile-y
+
+# img2img — transform an existing image
+pag generate "pixel art cat" --style rd_pro__default --input-image photo.png --strength 0.8
+
+# With palette reference
+pag generate "forest scene" --style rd_pro__default --input-palette palette.png
+
+# Native resolution output
+pag generate "a cat" --style rd_pro__default --upscale-output-factor 1
+
+# Disable prompt expansion
+pag generate "exactly this" --style rd_pro__default --bypass-prompt-expansion
 ```
 
 **All `generate` options:**
@@ -129,10 +145,18 @@ pag generate "grass texture" --style rd_pro__default --tile-x --tile-y
 | `--size WxH` | Image dimensions, e.g. `128x128`. Defaults to style minimum |
 | `-n, --num-images` | Number of images to generate (default: 1) |
 | `--seed` | Seed for generation |
-| `--ref PATH` | Reference image file (repeatable) |
+| `--ref PATH` | Reference image file (repeatable, up to 9 for RD_PRO) |
 | `--tile-x` | Enable horizontal seamless tiling |
 | `--tile-y` | Enable vertical seamless tiling |
 | `--remove-bg` | Remove image background |
+| `--input-image PATH` | Input image for img2img transformation |
+| `--strength FLOAT` | img2img strength, 0.0–1.0 (how much to modify the input) |
+| `--input-palette PATH` | Palette reference image for color guidance |
+| `--return-pre-palette` | Also return the image before palette application |
+| `--bypass-prompt-expansion` | Disable automatic prompt expansion |
+| `--upscale-output-factor INT` | Output scale factor (1 = native resolution) |
+| `--include-downloadable-data` | Include downloadable data (e.g. sprite atlas JSON) |
+| `--return-non-bg-removed` | Also return the image before background removal |
 | `-o, --output` | Exact output file path |
 | `-d, --output-dir` | Output directory (auto-names files) |
 | `--name-pattern` | Custom filename template (see [Filename patterns](#filename-patterns)) |
@@ -159,7 +183,7 @@ This prints the JSON request body and response to stderr, with base64 fields tru
 
 ### `pag animate` — Generate animations
 
-Generate animated sprites as GIF or PNG spritesheet.
+Generate animated sprites as GIF or PNG spritesheet. Supports both standard and advanced animation styles.
 
 ```bash
 # Walking + idle animation (outputs GIF)
@@ -176,20 +200,39 @@ pag animate "walking knight" --style walking_and_idle --remove-bg
 
 # Using a reference image
 pag animate "walking knight" --style walking_and_idle --input-image knight.png
+
+# Advanced animation — animate a starting frame (requires --input-image)
+pag animate "slow walk" --style walking --input-image sprite.png --size 96x96 --frames-duration 8
+
+# Advanced animation — attack sequence
+pag animate "sword slash" --style attack --input-image warrior.png --frames-duration 6
 ```
 
-You can use either the short name (`walking_and_idle`) or the full key (`animation__walking_and_idle`).
+You can use either the short name (`walking_and_idle`) or the full key (`animation__walking_and_idle`). For advanced animations, use the short name (`walking`) or full key (`rd_advanced_animation__walking`).
 
-**Available animation styles:**
+**Standard animation styles:**
 
-| Style | Default size | Description |
-|-------|-------------|-------------|
-| `any_animation` | 64x64 | Generic animation |
-| `8_dir_rotation` | 80x80 | 8-direction rotation |
-| `four_angle_walking` | 48x48 | 4-angle walk cycle |
-| `walking_and_idle` | 48x48 | Walk + idle |
-| `small_sprites` | 32x32 | Small animated sprites |
+| Style | Size | Notes |
+|-------|------|-------|
+| `any_animation` | 64x64 fixed | General purpose animations |
+| `8_dir_rotation` | 80x80 fixed | 8-direction rotation |
+| `four_angle_walking` | 48x48 fixed | 4-angle walk cycle |
+| `walking_and_idle` | 48x48 fixed | Walk + idle |
+| `small_sprites` | 32x32 fixed | Small animated sprites |
 | `vfx` | 24x24 → 96x96 | Visual effects (square only) |
+
+**Advanced animation styles** (require `--input-image`):
+
+| Style | Size range | Description |
+|-------|-----------|-------------|
+| `attack` | 32x32 → 256x256 | Character attack sequence |
+| `crouch` | 32x32 → 256x256 | Character crouching |
+| `custom_action` | 32x32 → 256x256 | Any custom action (describe in prompt) |
+| `destroy` | 32x32 → 256x256 | Object destruction |
+| `idle` | 32x32 → 256x256 | Character idle |
+| `jump` | 32x32 → 256x256 | Character jump |
+| `subtle_motion` | 32x32 → 256x256 | Environmental motion (rain, leaves) |
+| `walking` | 32x32 → 256x256 | Character walking cycle |
 
 **All `animate` options:**
 
@@ -200,12 +243,91 @@ You can use either the short name (`walking_and_idle`) or the full key (`animati
 | `--size WxH` | Override default size |
 | `--spritesheet` | Output PNG spritesheet instead of GIF |
 | `--remove-bg` | Remove background |
-| `--input-image PATH` | Reference image for the animation |
+| `--input-image PATH` | Reference image (required for advanced animations) |
+| `--frames-duration` | Number of frames: 4, 6, 8, 10, 12, or 16 (advanced only) |
 | `-o, --output` | Exact output file path |
 | `-d, --output-dir` | Output directory |
 | `--name-pattern` | Custom filename template |
 | `--stdout` | Write base64 to stdout |
 | `--open` | Open generated file with system viewer (`xdg-open`) |
+| `--api-key` | Override API key |
+
+### `pag tileset` — Generate tilesets
+
+Generate tileset pixel art for game maps.
+
+```bash
+# Simple tileset
+pag tileset "stone floor" --style tileset --size 32x32
+
+# Advanced tileset with inside/outside textures
+pag tileset "grey stones" --style tileset_advanced --extra-prompt "green grass" --size 32x32
+
+# Single tile texture
+pag tileset "volcanic rock" --style single_tile --size 32x32
+
+# Tile variation from an existing tile
+pag tileset "add moss" --style tile_variation --input-image base_tile.png
+
+# Large scene object
+pag tileset "oak tree" --style scene_object --size 128x128
+```
+
+You can use the short name (`tileset`) or full key (`rd_tile__tileset`).
+
+**Available tileset styles:**
+
+| Style | Size range | Description |
+|-------|-----------|-------------|
+| `tileset` | 16x16 → 32x32 | Full wang-style tilesets |
+| `tileset_advanced` | 16x16 → 32x32 | Two-texture tilesets (use `--extra-prompt`) |
+| `single_tile` | 16x16 → 64x64 | Single tile textures |
+| `tile_variation` | 16x16 → 128x128 | Variations of an existing tile |
+| `tile_object` | 16x16 → 96x96 | Small objects for tiles |
+| `scene_object` | 64x64 → 384x384 | Large scene objects |
+
+**All `tileset` options:**
+
+| Option | Description |
+|--------|-------------|
+| `PROMPT` | Text description (required) |
+| `--style` | Tileset style (required) |
+| `--size WxH` | Tile size |
+| `--extra-prompt` | Secondary prompt (for `tileset_advanced` outside texture) |
+| `--input-image PATH` | Input/inspiration image |
+| `--extra-input-image PATH` | Extra input image (for `tileset_advanced`) |
+| `-o, --output` | Exact output file path |
+| `-d, --output-dir` | Output directory |
+| `--name-pattern` | Custom filename template |
+| `--stdout` | Write base64 to stdout |
+| `--open` | Open generated file with system viewer |
+| `--api-key` | Override API key |
+
+### `pag edit` — Edit pixel art
+
+Edit an existing pixel art image using a text prompt.
+
+```bash
+# Add a hat to a character
+pag edit "add a red hat" --input-image character.png -o character_hat.png
+
+# Progressive editing — chain edits
+pag edit "add wings" --input-image character_hat.png -o character_final.png
+```
+
+Supported image sizes: 16x16 to 256x256. Cost: 0.06 credits per edit.
+
+**All `edit` options:**
+
+| Option | Description |
+|--------|-------------|
+| `PROMPT` | Description of the edit (required) |
+| `--input-image PATH` | Image to edit (required) |
+| `-o, --output` | Output file path |
+| `-d, --output-dir` | Output directory |
+| `--name-pattern` | Custom filename template |
+| `--stdout` | Write base64 to stdout |
+| `--open` | Open generated file with system viewer |
 | `--api-key` | Override API key |
 
 ### `pag cost` — Estimate credit cost
@@ -219,6 +341,12 @@ pag cost "tileset" --style rd_pro__dungeon_map -n 4
 
 **Options:** `PROMPT`, `--style`, `--size`, `-n`, `--api-key`
 
+### `pag balance` — Check credit balance
+
+```bash
+pag balance
+```
+
 ### `pag list-styles` — Browse available styles
 
 List all built-in styles with their size ranges.
@@ -231,7 +359,9 @@ pag list-styles
 pag list-styles --model rd_pro
 pag list-styles --model rd_fast
 pag list-styles --model rd_plus
+pag list-styles --model rd_tile
 pag list-styles --model animation
+pag list-styles --model rd_advanced_animation
 ```
 
 ### `pag styles` — Manage custom styles
@@ -311,7 +441,7 @@ pag generate "gems" --style rd_pro__default -n 3 -d ./output/
 
 ## Available styles and size limits
 
-> **Important:** Each style has a minimum and maximum allowed size. Requests below the minimum size will be rejected by the API. Always check the limits below before generating.
+> **Important:** Each style has a minimum and maximum allowed size. Requests below the minimum or above the maximum will be rejected by the API.
 
 ### RD_PRO — min 96x96, max 256x256
 
@@ -338,9 +468,18 @@ All RD_PRO styles share the same size range.
 | Top-down item | `topdown_item` | 16x16 | 128x128 |
 | Skill icon | `skill_icon` | 16x16 | 128x128 |
 
-### Animations — fixed or limited sizes
+### RD_TILE — tileset styles
 
-Most animation styles use a **fixed size** that cannot be changed. Only `vfx` supports a range.
+| Style | Min size | Max size |
+|-------|----------|----------|
+| `tileset` | 16x16 | 32x32 |
+| `tileset_advanced` | 16x16 | 32x32 |
+| `single_tile` | 16x16 | 64x64 |
+| `tile_variation` | 16x16 | 128x128 |
+| `tile_object` | 16x16 | 96x96 |
+| `scene_object` | 64x64 | 384x384 |
+
+### Standard animations — fixed or limited sizes
 
 | Style | Size | Notes |
 |-------|------|-------|
@@ -350,6 +489,12 @@ Most animation styles use a **fixed size** that cannot be changed. Only `vfx` su
 | `walking_and_idle` | 48x48 fixed | |
 | `small_sprites` | 32x32 fixed | |
 | `vfx` | 24x24 → 96x96 | Must be square |
+
+### Advanced animations — 32x32 to 256x256
+
+All advanced animation styles require `--input-image` and support `--frames-duration`.
+
+`attack`, `crouch`, `custom_action`, `destroy`, `idle`, `jump`, `subtle_motion`, `walking`
 
 ## Development
 
@@ -386,14 +531,14 @@ pag/
 │   └── pag/
 │       ├── __init__.py     # Version
 │       ├── __main__.py     # python -m pag entry point
-│       ├── cli.py          # Click-based CLI (generate, animate, cost, styles)
+│       ├── cli.py          # Click-based CLI (generate, animate, tileset, edit, cost, balance, styles)
 │       ├── client.py       # Retro Diffusion API client (httpx)
 │       ├── models.py       # Pydantic request/response models
 │       ├── styles.py       # Style registry and validation
 │       ├── config.py       # API key resolution
 │       └── output.py       # Base64 decoding, file saving, filename resolution
 ├── tests/
-│   ├── unit/               # 82 tests — mocked, no API calls
+│   ├── unit/               # 158 tests — mocked, no API calls
 │   └── live/               # 10 tests — real API, need RETRODIFFUSION_API_KEY
 ```
 

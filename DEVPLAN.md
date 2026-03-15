@@ -163,14 +163,12 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Added --include-downloadable-data, --return-non-bg-removed
 - [x] 2 new unit tests (158 total)
 
-## M22 — Audit e fix README finale
+## M22 — Audit e fix README finale ✅
 
-Revisione completa del README per allinearlo a tutti i fix precedenti.
-
-- [ ] Sezione "Available styles and size limits" — aggiornare nomi, tabelle, range, includere tileset e advanced animations
-- [ ] Sezione animate — aggiungere advanced animations
-- [ ] Aggiungere sezione tileset
-- [ ] Aggiungere sezione edit
-- [ ] Aggiungere sezione balance
-- [ ] Aggiungere documentazione nuove opzioni generate (img2img, palette, ecc.)
-- [ ] Verificare che ogni stile e parametro listato corrisponda esattamente all'API
+- [x] Complete README rewrite covering all 6 model tiers
+- [x] Documented all new commands: tileset, edit, balance
+- [x] Documented all new generate options: img2img, palette, bypass-prompt-expansion, upscale, downloadable-data
+- [x] Documented advanced animations with --frames-duration
+- [x] All style names and size limits match official API
+- [x] Updated project structure and test counts
+- [x] All 158 unit tests pass

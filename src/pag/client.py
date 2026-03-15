@@ -5,6 +5,8 @@ from __future__ import annotations
 import httpx
 
 from pag.models import (
+    EditRequest,
+    EditResponse,
     InferenceRequest,
     InferenceResponse,
     StyleCreateRequest,
@@ -87,6 +89,14 @@ class RetroClient:
         msg = "Checking cost" if request.check_cost else "Generating"
         data = self._post("/inferences", body, spinner_msg=msg)
         return InferenceResponse.model_validate(data)
+
+    # ── edit ──────────────────────────────────────────────────────────────
+
+    def edit(self, request: EditRequest) -> EditResponse:
+        """POST /v1/edit — edit an existing image."""
+        body = request.model_dump()
+        data = self._post("/edit", body, spinner_msg="Editing")
+        return EditResponse.model_validate(data)
 
     # ── custom styles ────────────────────────────────────────────────────
 

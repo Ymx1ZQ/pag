@@ -52,6 +52,26 @@ class InferenceResponse(BaseModel):
 # ── Custom styles ────────────────────────────────────────────────────────────
 
 
+# ── Edit ────────────────────────────────────────────────────────────────────
+
+
+class EditRequest(BaseModel):
+    """Body for POST /v1/edit."""
+
+    prompt: str
+    inputImageBase64: str  # noqa: N815 — API uses camelCase
+
+
+class EditResponse(BaseModel):
+    """Response from POST /v1/edit."""
+
+    outputImageBase64: str  # noqa: N815
+    remaining_credits: float
+
+
+# ── Custom styles ────────────────────────────────────────────────────────────
+
+
 class StyleCreateRequest(BaseModel):
     """Body for POST /v1/styles."""
 

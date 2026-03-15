@@ -4,6 +4,8 @@ import pytest
 from pydantic import ValidationError
 
 from pag.models import (
+    EditRequest,
+    EditResponse,
     InferenceRequest,
     InferenceResponse,
     StyleCreateRequest,
@@ -166,6 +168,18 @@ class TestStyleCreateRequest:
     def test_min_width_upper_bound(self):
         with pytest.raises(ValidationError):
             StyleCreateRequest(name="x", min_width=300)
+
+
+class TestEditModels:
+    def test_edit_request(self):
+        req = EditRequest(prompt="add a hat", inputImageBase64="base64data")
+        assert req.prompt == "add a hat"
+        assert req.inputImageBase64 == "base64data"
+
+    def test_edit_response(self):
+        resp = EditResponse(outputImageBase64="result", remaining_credits=99.5)
+        assert resp.outputImageBase64 == "result"
+        assert resp.remaining_credits == 99.5
 
 
 class TestStyleResponse:

@@ -142,19 +142,12 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Added rd_advanced_animation to list-styles --model filter
 - [x] 5 new unit tests (152 total)
 
-## M19 — Aggiungere endpoint Edit (POST /v1/edit)
+## M19 — Aggiungere endpoint Edit (POST /v1/edit) ✅
 
-L'API ha un endpoint di editing separato che non supportiamo.
-
-- [ ] Aggiungere `EditRequest` e `EditResponse` a `models.py`
-  - Request: `prompt: str`, `inputImageBase64: str`
-  - Response: `outputImageBase64: str`, `remaining_credits: float`
-  - Size supportata: 16x16→256x256
-- [ ] Aggiungere metodo `edit()` a `RetroClient`
-- [ ] Aggiungere comando `pag edit` al CLI
-  - `pag edit "add a hat" --input-image sprite.png`
-  - Supportare `-o`, `-d`, `--name-pattern`, `--stdout`, `--open`
-- [ ] Unit test
+- [x] Added EditRequest and EditResponse models
+- [x] Added edit() method to RetroClient
+- [x] Added `pag edit` CLI command with -o, -d, --name-pattern, --stdout, --open
+- [x] 3 new unit tests (155 total)
 
 ## M20 — Aggiungere endpoint Balance (GET /v1/inferences/credits)
 

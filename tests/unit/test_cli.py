@@ -388,6 +388,34 @@ def test_tileset_advanced_with_extra_prompt(mock_key, mock_client_cls, runner, t
     assert req.extra_prompt == "green grass"
 
 
+# ── edit ────────────────────────────────────────────────────────────────────
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_edit_basic(mock_key, mock_client_cls, runner, tmp_path):
+    from pag.models import EditResponse
+    img = tmp_path / "input.png"
+    img.write_bytes(b"fake image")
+
+    mock_client = MagicMock()
+    mock_client.edit.return_value = EditResponse(
+        outputImageBase64="aGVsbG8=", remaining_credits=99.0
+    )
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "edit", "add a hat",
+        "--input-image", str(img),
+        "-o", str(tmp_path / "edited.png"),
+    ])
+    assert result.exit_code == 0
+    assert "Saved:" in result.output
+    assert (tmp_path / "edited.png").exists()
+
+
 def test_tileset_unknown_style(runner):
     result = runner.invoke(main, [
         "tileset", "stone",

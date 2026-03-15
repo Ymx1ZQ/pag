@@ -12,7 +12,7 @@ import click
 from pag import __version__
 from pag.client import APIError, RetroClient
 from pag.config import ConfigError, get_saved_key, mask_key, resolve_api_key, save_api_key
-from pag.models import InferenceRequest, StyleCreateRequest, StyleUpdateRequest
+from pag.models import EditRequest, InferenceRequest, StyleCreateRequest, StyleUpdateRequest
 from pag.output import decode_and_save, resolve_filename, write_stdout
 from pag.styles import get_style, list_styles, validate_size
 
@@ -378,6 +378,71 @@ def tileset(
                 _open_file(path)
 
     click.echo(f"Cost: {resp.balance_cost} credits (remaining: {resp.remaining_balance})", err=True)
+
+
+# ── edit ──────────────────────────────────────────────────────────────────────
+
+
+@main.command()
+@click.argument("prompt")
+@click.option("--input-image", required=True, type=click.Path(exists=True), help="Image to edit (16x16–256x256).")
+@click.option("-o", "--output", default=None, help="Output file path.")
+@click.option("-d", "--output-dir", default=None, type=click.Path(), help="Output directory.")
+@click.option("--name-pattern", default=None, help="Filename pattern.")
+@click.option("--stdout", "to_stdout", is_flag=True, help="Write base64 to stdout.")
+@click.option("--open", "auto_open", is_flag=True, help="Open generated file with system viewer.")
+@click.option("--api-key", default=None, envvar="RETRODIFFUSION_API_KEY", help="API key.")
+def edit(
+    prompt: str,
+    input_image: str,
+    output: str | None,
+    output_dir: str | None,
+    name_pattern: str | None,
+    to_stdout: bool,
+    auto_open: bool,
+    api_key: str | None,
+) -> None:
+    """Edit an existing pixel art image with a text prompt."""
+    verbose = click.get_current_context().obj.get("verbose", False)
+    try:
+        key = resolve_api_key(api_key)
+    except ConfigError as e:
+        _handle_error(e)
+
+    input_b64 = _read_ref_image(input_image)
+
+    req = EditRequest(
+        prompt=prompt,
+        inputImageBase64=input_b64,
+    )
+
+    try:
+        with RetroClient(key, verbose=verbose) as client:
+            resp = client.edit(req)
+    except APIError as e:
+        _handle_error(e)
+
+    b64 = resp.outputImageBase64
+    if to_stdout:
+        write_stdout(b64)
+    else:
+        path = resolve_filename(
+            index=0,
+            num_images=1,
+            prompt=prompt,
+            style="edit",
+            seed=None,
+            is_animation=False,
+            output=output,
+            output_dir=output_dir,
+            name_pattern=name_pattern,
+        )
+        decode_and_save(b64, path)
+        click.echo(f"Saved: {path}")
+        if auto_open:
+            _open_file(path)
+
+    click.echo(f"Remaining credits: {resp.remaining_credits}", err=True)
 
 
 # ── cost ─────────────────────────────────────────────────────────────────────

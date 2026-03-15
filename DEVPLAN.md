@@ -108,13 +108,11 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Updated README "Available styles and size limits" section
 - [x] Added 25 new unit tests for name/size validation (124 total, all green)
 
-## M14 — Fix InferenceRequest field constraints
+## M14 — Fix InferenceRequest field constraints ✅
 
-Il model Pydantic ha vincoli sbagliati che impediscono l'uso di stili a bassa risoluzione.
-
-- [ ] `InferenceRequest.width`: `ge=24` → `ge=16` (stili low_res/mc vanno fino a 16)
-- [ ] `InferenceRequest.height`: `ge=24` → `ge=16`
-- [ ] Aggiornare unit test che validano i bounds
+- [x] `InferenceRequest.width`: `ge=24` → `ge=16`
+- [x] `InferenceRequest.height`: `ge=24` → `ge=16`
+- [x] Added test for minimum size 16 acceptance
 
 ## M15 — Aggiungere parametri API mancanti a InferenceRequest
 

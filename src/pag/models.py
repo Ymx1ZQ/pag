@@ -12,8 +12,8 @@ class InferenceRequest(BaseModel):
     """Body for POST /v1/inferences."""
 
     prompt: str
-    width: int = Field(ge=24, le=384)
-    height: int = Field(ge=24, le=384)
+    width: int = Field(ge=16, le=384)
+    height: int = Field(ge=16, le=384)
     prompt_style: str
     num_images: int = Field(default=1, ge=1)
     check_cost: bool = False

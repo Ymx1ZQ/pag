@@ -38,6 +38,12 @@ class TestInferenceRequest:
         assert req.tile_x is True
         assert req.return_spritesheet is True
 
+    def test_minimum_size_16(self):
+        req = InferenceRequest(
+            prompt="x", width=16, height=16, prompt_style="rd_fast__low_res"
+        )
+        assert req.width == 16
+
     def test_width_too_small(self):
         with pytest.raises(ValidationError):
             InferenceRequest(

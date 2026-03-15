@@ -137,6 +137,7 @@ pag generate "grass texture" --style rd_pro__default --tile-x --tile-y
 | `-d, --output-dir` | Output directory (auto-names files) |
 | `--name-pattern` | Custom filename template (see [Filename patterns](#filename-patterns)) |
 | `--stdout` | Write base64 to stdout instead of saving files |
+| `--open` | Open generated file(s) with system viewer (`xdg-open`) |
 | `--api-key` | Override API key for this command |
 
 ### Verbose mode and spinner
@@ -204,6 +205,7 @@ You can use either the short name (`walking_and_idle`) or the full key (`animati
 | `-d, --output-dir` | Output directory |
 | `--name-pattern` | Custom filename template |
 | `--stdout` | Write base64 to stdout |
+| `--open` | Open generated file with system viewer (`xdg-open`) |
 | `--api-key` | Override API key |
 
 ### `pag cost` — Estimate credit cost

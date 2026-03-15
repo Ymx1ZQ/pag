@@ -85,13 +85,13 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Unit tests for both new options
 - [x] Update README animate section
 
-## M11 — Auto-open generated files
+## M11 — Auto-open generated files ✅
 
-- [ ] Add `--open` flag to `pag generate` and `pag animate`
-- [ ] Opens the generated file(s) with `xdg-open` after saving
-- [ ] No-op when `--stdout` is used
-- [ ] Unit tests
-- [ ] Update README
+- [x] Add `--open` flag to `pag generate` and `pag animate`
+- [x] Opens the generated file(s) with `xdg-open` after saving
+- [x] No-op when `--stdout` is used (stdout path skips file saving entirely)
+- [x] Unit tests (2 new tests)
+- [x] Update README
 
 ## M12 — Shell completions
 

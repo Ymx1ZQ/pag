@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import subprocess
 import sys
 from pathlib import Path
 
@@ -35,6 +36,14 @@ def _handle_error(e: Exception) -> None:
     """Print error and exit."""
     click.echo(f"Error: {e}", err=True)
     sys.exit(1)
+
+
+def _open_file(path: Path) -> None:
+    """Open a file with the system viewer (xdg-open)."""
+    try:
+        subprocess.Popen(["xdg-open", str(path)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except FileNotFoundError:
+        click.echo("Warning: xdg-open not found, cannot open file.", err=True)
 
 
 # ── Main group ───────────────────────────────────────────────────────────────
@@ -78,6 +87,7 @@ def list_styles_cmd(model: str | None) -> None:
 @click.option("-d", "--output-dir", default=None, type=click.Path(), help="Output directory.")
 @click.option("--name-pattern", default=None, help="Filename pattern with {prompt_slug}, {style}, {seed}, {n}, {timestamp}.")
 @click.option("--stdout", "to_stdout", is_flag=True, help="Write base64 to stdout instead of files.")
+@click.option("--open", "auto_open", is_flag=True, help="Open generated file(s) with system viewer.")
 @click.option("--api-key", default=None, envvar="RETRODIFFUSION_API_KEY", help="API key (overrides env/dotenv).")
 def generate(
     prompt: str,
@@ -93,6 +103,7 @@ def generate(
     output_dir: str | None,
     name_pattern: str | None,
     to_stdout: bool,
+    auto_open: bool,
     api_key: str | None,
 ) -> None:
     """Generate pixel art from a text prompt."""
@@ -154,6 +165,8 @@ def generate(
             )
             decode_and_save(b64, path)
             click.echo(f"Saved: {path}")
+            if auto_open:
+                _open_file(path)
 
     click.echo(f"Cost: {resp.balance_cost} credits (remaining: {resp.remaining_balance})", err=True)
 
@@ -172,6 +185,7 @@ def generate(
 @click.option("-d", "--output-dir", default=None, type=click.Path(), help="Output directory.")
 @click.option("--name-pattern", default=None, help="Filename pattern.")
 @click.option("--stdout", "to_stdout", is_flag=True, help="Write base64 to stdout.")
+@click.option("--open", "auto_open", is_flag=True, help="Open generated file with system viewer.")
 @click.option("--api-key", default=None, envvar="RETRODIFFUSION_API_KEY", help="API key.")
 def animate(
     prompt: str,
@@ -184,6 +198,7 @@ def animate(
     output_dir: str | None,
     name_pattern: str | None,
     to_stdout: bool,
+    auto_open: bool,
     api_key: str | None,
 ) -> None:
     """Generate an animated sprite from a text prompt."""
@@ -246,6 +261,8 @@ def animate(
             )
             decode_and_save(b64, path)
             click.echo(f"Saved: {path}")
+            if auto_open:
+                _open_file(path)
 
     click.echo(f"Cost: {resp.balance_cost} credits (remaining: {resp.remaining_balance})", err=True)
 

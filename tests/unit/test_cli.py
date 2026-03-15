@@ -103,6 +103,26 @@ def test_generate_basic(mock_key, mock_client_cls, runner, tmp_path):
     assert (tmp_path / "cat.png").exists()
 
 
+@patch("pag.cli._open_file")
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_generate_open(mock_key, mock_client_cls, mock_open, runner, tmp_path):
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "generate", "a cat",
+        "--style", "rd_pro__default",
+        "--open",
+        "-o", str(tmp_path / "cat.png"),
+    ])
+    assert result.exit_code == 0
+    mock_open.assert_called_once()
+
+
 @patch("pag.cli.RetroClient")
 @patch("pag.cli.resolve_api_key", return_value="test-key")
 def test_generate_stdout(mock_key, mock_client_cls, runner):
@@ -177,6 +197,26 @@ def test_animate_basic(mock_key, mock_client_cls, runner, tmp_path):
     ])
     assert result.exit_code == 0
     assert "Saved:" in result.output
+
+
+@patch("pag.cli._open_file")
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_animate_open(mock_key, mock_client_cls, mock_open, runner, tmp_path):
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "animate", "a knight",
+        "--style", "walking_and_idle",
+        "--open",
+        "-o", str(tmp_path / "knight.gif"),
+    ])
+    assert result.exit_code == 0
+    mock_open.assert_called_once()
 
 
 @patch("pag.cli.RetroClient")

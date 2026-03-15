@@ -77,3 +77,24 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Add `pag config show` — shows masked key and source
 - [x] Unit tests for config resolution, save, mask, CLI config commands
 - [x] Update README — configuration section, quickstart
+
+## M10 — Animate enhancements
+
+- [ ] Add `--remove-bg` flag to `pag animate`
+- [ ] Add `--input-image` option to `pag animate` — base64-encodes a reference image and passes it as `input_image` to the API
+- [ ] Unit tests for both new options
+- [ ] Update README animate section
+
+## M11 — Auto-open generated files
+
+- [ ] Add `--open` flag to `pag generate` and `pag animate`
+- [ ] Opens the generated file(s) with `xdg-open` after saving
+- [ ] No-op when `--stdout` is used
+- [ ] Unit tests
+- [ ] Update README
+
+## M12 — Shell completions
+
+- [ ] Add `pag completions` command that outputs shell completion script
+- [ ] Support bash and zsh (`pag completions bash`, `pag completions zsh`)
+- [ ] Document installation in README (e.g. `eval "$(pag completions bash)"` or append to `.bashrc`)

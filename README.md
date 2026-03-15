@@ -169,6 +169,12 @@ pag animate "walking knight" --style walking_and_idle --spritesheet
 
 # VFX animation with custom size
 pag animate "fire effect" --style vfx --size 48x48
+
+# With transparent background
+pag animate "walking knight" --style walking_and_idle --remove-bg
+
+# Using a reference image
+pag animate "walking knight" --style walking_and_idle --input-image knight.png
 ```
 
 You can use either the short name (`walking_and_idle`) or the full key (`animation__walking_and_idle`).
@@ -192,6 +198,8 @@ You can use either the short name (`walking_and_idle`) or the full key (`animati
 | `--style` | Animation style (required) |
 | `--size WxH` | Override default size |
 | `--spritesheet` | Output PNG spritesheet instead of GIF |
+| `--remove-bg` | Remove background |
+| `--input-image PATH` | Reference image for the animation |
 | `-o, --output` | Exact output file path |
 | `-d, --output-dir` | Output directory |
 | `--name-pattern` | Custom filename template |

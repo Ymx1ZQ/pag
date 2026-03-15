@@ -78,12 +78,12 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Unit tests for config resolution, save, mask, CLI config commands
 - [x] Update README — configuration section, quickstart
 
-## M10 — Animate enhancements
+## M10 — Animate enhancements ✅
 
-- [ ] Add `--remove-bg` flag to `pag animate`
-- [ ] Add `--input-image` option to `pag animate` — base64-encodes a reference image and passes it as `input_image` to the API
-- [ ] Unit tests for both new options
-- [ ] Update README animate section
+- [x] Add `--remove-bg` flag to `pag animate`
+- [x] Add `--input-image` option to `pag animate` — base64-encodes a reference image and passes it as `input_image` to the API
+- [x] Unit tests for both new options
+- [x] Update README animate section
 
 ## M11 — Auto-open generated files
 

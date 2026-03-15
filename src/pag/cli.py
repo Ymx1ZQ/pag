@@ -166,6 +166,8 @@ def generate(
 @click.option("--style", required=True, help="Animation style (e.g. walking_and_idle, vfx). Use `pag list-styles --model animation`.")
 @click.option("--size", default=None, help="Image size as WxH. Defaults to style default.")
 @click.option("--spritesheet", is_flag=True, help="Output PNG spritesheet instead of GIF.")
+@click.option("--remove-bg", is_flag=True, help="Remove background.")
+@click.option("--input-image", default=None, type=click.Path(exists=True), help="Reference image for the animation.")
 @click.option("-o", "--output", default=None, help="Output file path.")
 @click.option("-d", "--output-dir", default=None, type=click.Path(), help="Output directory.")
 @click.option("--name-pattern", default=None, help="Filename pattern.")
@@ -176,6 +178,8 @@ def animate(
     style: str,
     size: str | None,
     spritesheet: bool,
+    remove_bg: bool,
+    input_image: str | None,
     output: str | None,
     output_dir: str | None,
     name_pattern: str | None,
@@ -204,6 +208,8 @@ def animate(
     except ValueError as e:
         _handle_error(e)
 
+    input_b64 = _read_ref_image(input_image) if input_image else None
+
     req = InferenceRequest(
         prompt=prompt,
         width=width,
@@ -211,6 +217,8 @@ def animate(
         prompt_style=full_key,
         num_images=1,
         return_spritesheet=spritesheet or None,
+        remove_bg=remove_bg,
+        input_image=input_b64,
     )
 
     try:

@@ -215,6 +215,50 @@ def test_animate_accepts_full_key(mock_key, mock_client_cls, runner, tmp_path):
     assert result.exit_code == 0
 
 
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_animate_remove_bg(mock_key, mock_client_cls, runner, tmp_path):
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "animate", "a knight",
+        "--style", "walking_and_idle",
+        "--remove-bg",
+        "-o", str(tmp_path / "knight.gif"),
+    ])
+    assert result.exit_code == 0
+    req = mock_client.infer.call_args[0][0]
+    assert req.remove_bg is True
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_animate_input_image(mock_key, mock_client_cls, runner, tmp_path):
+    # Create a fake input image
+    img = tmp_path / "ref.png"
+    img.write_bytes(b"fake image data")
+
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "animate", "a knight",
+        "--style", "walking_and_idle",
+        "--input-image", str(img),
+        "-o", str(tmp_path / "knight.gif"),
+    ])
+    assert result.exit_code == 0
+    req = mock_client.infer.call_args[0][0]
+    assert req.input_image is not None
+
+
 # ── cost ─────────────────────────────────────────────────────────────────────
 
 

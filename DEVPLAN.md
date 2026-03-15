@@ -16,11 +16,11 @@
 - [x] Implement `styles.py` — Static registry of all styles per model (RD_PRO, RD_FAST, RD_PLUS, animations) with valid size ranges
 - [x] Unit tests for config, models, styles
 
-## M3 — API client
+## M3 — API client ✅
 
-- [ ] Implement `client.py` — httpx-based client for `/v1/inferences` (generate, animate, cost check) and `/v1/styles` (CRUD)
-- [ ] Handle errors, timeouts, retries
-- [ ] Unit tests with respx mocks
+- [x] Implement `client.py` — httpx-based client for `/v1/inferences` (generate, animate, cost check) and `/v1/styles` (CRUD)
+- [x] Handle errors, timeouts, retries
+- [x] Unit tests with respx mocks
 
 ## M4 — Output handling
 

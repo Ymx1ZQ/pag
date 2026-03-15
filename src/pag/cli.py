@@ -295,27 +295,11 @@ def styles() -> None:
 
 
 @styles.command("list")
-@click.option("--api-key", default=None, envvar="RETRODIFFUSION_API_KEY", help="API key.")
-def styles_list(api_key: str | None) -> None:
-    """List your custom styles."""
-    try:
-        key = resolve_api_key(api_key)
-    except ConfigError as e:
-        _handle_error(e)
-
-    try:
-        with RetroClient(key) as client:
-            result = client.list_styles()
-    except APIError as e:
-        _handle_error(e)
-
-    if not result:
-        click.echo("No custom styles found.")
-        return
-
-    for s in result:
-        desc = f" — {s.description}" if s.description else ""
-        click.echo(f"  {s.id}  {s.name}{desc}")
+@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "animation"]), default=None)
+def styles_list(model: str | None) -> None:
+    """List available built-in styles."""
+    for s in list_styles(model):
+        click.echo(f"  {s.key:<40s}  {s.label}  ({s.min_w}x{s.min_h} → {s.max_w}x{s.max_h})")
 
 
 @styles.command("create")

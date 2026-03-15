@@ -141,22 +141,6 @@ def test_delete_style(client):
     client.delete_style("style_123")  # should not raise
 
 
-@respx.mock
-def test_list_styles(client):
-    respx.get(f"{API_BASE}/styles").mock(
-        return_value=httpx.Response(
-            200,
-            json=[
-                {"id": "s1", "name": "style one", "description": "desc"},
-                {"id": "s2", "name": "style two", "description": None},
-            ],
-        )
-    )
-    styles = client.list_styles()
-    assert len(styles) == 2
-    assert styles[0].id == "s1"
-
-
 # ── context manager ─────────────────────────────────────────────────────────
 
 

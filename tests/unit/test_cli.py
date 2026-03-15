@@ -240,35 +240,17 @@ def test_cost(mock_key, mock_client_cls, runner):
 # ── styles subcommands ───────────────────────────────────────────────────────
 
 
-@patch("pag.cli.RetroClient")
-@patch("pag.cli.resolve_api_key", return_value="test-key")
-def test_styles_list(mock_key, mock_client_cls, runner):
-    from pag.models import StyleResponse
-    mock_client = MagicMock()
-    mock_client.list_styles.return_value = [
-        StyleResponse(id="s1", name="style one", description="desc"),
-    ]
-    mock_client.__enter__ = MagicMock(return_value=mock_client)
-    mock_client.__exit__ = MagicMock(return_value=False)
-    mock_client_cls.return_value = mock_client
-
+def test_styles_list(runner):
     result = runner.invoke(main, ["styles", "list"])
     assert result.exit_code == 0
-    assert "style one" in result.output
+    assert "rd_pro__default" in result.output
 
 
-@patch("pag.cli.RetroClient")
-@patch("pag.cli.resolve_api_key", return_value="test-key")
-def test_styles_list_empty(mock_key, mock_client_cls, runner):
-    mock_client = MagicMock()
-    mock_client.list_styles.return_value = []
-    mock_client.__enter__ = MagicMock(return_value=mock_client)
-    mock_client.__exit__ = MagicMock(return_value=False)
-    mock_client_cls.return_value = mock_client
-
-    result = runner.invoke(main, ["styles", "list"])
+def test_styles_list_filtered_by_model(runner):
+    result = runner.invoke(main, ["styles", "list", "--model", "animation"])
     assert result.exit_code == 0
-    assert "No custom styles" in result.output
+    assert "animation__" in result.output
+    assert "rd_pro__" not in result.output
 
 
 @patch("pag.cli.RetroClient")

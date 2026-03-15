@@ -93,8 +93,3 @@ class RetroClient:
         resp = self._client.delete(f"/styles/{style_id}")
         self._raise_for_status(resp)
 
-    def list_styles(self) -> list[StyleResponse]:
-        """GET /v1/styles."""
-        resp = self._client.get("/styles")
-        self._raise_for_status(resp)
-        return [StyleResponse.model_validate(s) for s in resp.json()]

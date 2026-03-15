@@ -44,13 +44,15 @@
   - [x] `pag --version`, `pag list-styles [--model]`
 - [x] Unit tests for CLI (click.testing.CliRunner) — 21 tests
 
-## M6 — Live tests
+## M6 — Live tests ✅
 
-- [ ] `tests/live/conftest.py` — skip if no API key, shared fixtures
-- [ ] `test_generate.py` — basic generation, multiple images, reference images, tiling, bg removal
-- [ ] `test_animate.py` — GIF and spritesheet output
-- [ ] `test_styles_api.py` — create, update, delete custom style
-- [ ] `test_cost_check.py` — verify cost check returns expected fields
+- [x] `tests/live/conftest.py` — skip if no API key, shared fixtures
+- [x] `test_generate.py` — basic generation, multiple images, seed, tiling, bg removal
+- [x] `test_animate.py` — GIF and spritesheet output
+- [x] `test_styles_api.py` — create, update, delete custom style lifecycle
+- [x] `test_cost_check.py` — verify cost check returns expected fields
+
+Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allowed. `styles list` now shows built-in styles instead. Seed reproducibility test relaxed — API does not guarantee identical output for same seed.
 
 ## M7 — Install script and final polish
 

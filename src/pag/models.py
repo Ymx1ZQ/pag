@@ -44,6 +44,9 @@ class InferenceResponse(BaseModel):
     base64_images: list[str]
     model: str
     remaining_balance: float
+    output_images: list[str] = Field(default_factory=list)
+    output_urls: list[str] = Field(default_factory=list)
+    downloadable_data: dict | None = None
 
 
 # ── Custom styles ────────────────────────────────────────────────────────────
@@ -91,3 +94,8 @@ class StyleResponse(BaseModel):
     id: str
     name: str
     description: str | None = None
+    prompt_style: str | None = None
+    type: str | None = None
+    created_at: int | None = None
+    updated_at: int | None = None
+    deleted: bool | None = None

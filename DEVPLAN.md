@@ -119,24 +119,12 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Added all 10 missing fields: strength, input_palette, return_pre_palette, bypass_prompt_expansion, include_downloadable_data, return_non_bg_removed, upscale_output_factor, extra_prompt, extra_input_image, frames_duration
 - [x] Added 6 new unit tests covering all new fields
 
-## M16 — Fix InferenceResponse e StyleResponse
+## M16 — Fix InferenceResponse e StyleResponse ✅
 
-I model di risposta non catturano tutti i campi restituiti dall'API.
-
-**InferenceResponse — campi mancanti:**
-- [ ] `output_images: list[str]` (default `[]`)
-- [ ] `output_urls: list[str]` (default `[]`)
-- [ ] `downloadable_data: dict | None` (quando include_downloadable_data è usato)
-
-**StyleResponse — campi mancanti:**
-- [ ] `prompt_style: str | None` (la chiave da usare nelle inference)
-- [ ] `type: str | None` (es. "user")
-- [ ] `created_at: int | None`
-- [ ] `updated_at: int | None`
-- [ ] `deleted: bool | None` (restituito dal delete)
-
-- [ ] Aggiornare `cli.py` per mostrare `prompt_style` dopo la creazione (è il valore che l'utente deve usare)
-- [ ] Aggiornare unit test
+- [x] Added output_images, output_urls, downloadable_data to InferenceResponse
+- [x] Added prompt_style, type, created_at, updated_at, deleted to StyleResponse
+- [x] CLI shows prompt_style after style creation
+- [x] Added 5 new unit tests (136 total)
 
 ## M17 — Aggiungere stili Tileset (rd_tile)
 

@@ -370,6 +370,8 @@ def styles_create(
         _handle_error(e)
 
     click.echo(f"Created style: {resp.id} ({resp.name})")
+    if resp.prompt_style:
+        click.echo(f"Use as: --style {resp.prompt_style}")
 
 
 @styles.command("update")

@@ -7,6 +7,7 @@ from pag.models import (
     InferenceRequest,
     InferenceResponse,
     StyleCreateRequest,
+    StyleResponse,
     StyleUpdateRequest,
 )
 
@@ -134,6 +135,23 @@ class TestInferenceResponse:
         assert resp.balance_cost == 0.25
         assert len(resp.base64_images) == 1
 
+    def test_optional_fields_default(self):
+        resp = InferenceResponse(
+            created_at=1, balance_cost=0.1,
+            base64_images=[], model="rd_pro", remaining_balance=99.0,
+        )
+        assert resp.output_images == []
+        assert resp.output_urls == []
+        assert resp.downloadable_data is None
+
+    def test_downloadable_data(self):
+        resp = InferenceResponse(
+            created_at=1, balance_cost=0.1,
+            base64_images=["x"], model="rd_pro", remaining_balance=99.0,
+            downloadable_data={"downloadable_json": {"type": "item_atlas"}},
+        )
+        assert resp.downloadable_data["downloadable_json"]["type"] == "item_atlas"
+
 
 class TestStyleCreateRequest:
     def test_minimal(self):
@@ -148,6 +166,32 @@ class TestStyleCreateRequest:
     def test_min_width_upper_bound(self):
         with pytest.raises(ValidationError):
             StyleCreateRequest(name="x", min_width=300)
+
+
+class TestStyleResponse:
+    def test_minimal(self):
+        resp = StyleResponse(id="s1", name="my style")
+        assert resp.prompt_style is None
+        assert resp.deleted is None
+
+    def test_full_response(self):
+        resp = StyleResponse(
+            id="s1", name="my style",
+            prompt_style="user__my_style_abc",
+            type="user",
+            created_at=1771557653,
+            updated_at=1771557653,
+        )
+        assert resp.prompt_style == "user__my_style_abc"
+        assert resp.type == "user"
+
+    def test_delete_response(self):
+        resp = StyleResponse(
+            id="s1", name="my style",
+            prompt_style="user__my_style_abc",
+            deleted=True,
+        )
+        assert resp.deleted is True
 
 
 class TestStyleUpdateRequest:

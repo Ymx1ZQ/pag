@@ -59,7 +59,13 @@ The install script will:
 3. Install `pag` as a global CLI tool via `uv tool install`
 4. Verify the installation with `pag --version`
 
-### Manual installation
+### One-liner from GitHub
+
+```bash
+uv tool install git+https://github.com/Ymx1ZQ/pag.git
+```
+
+### Manual installation (from local clone)
 
 ```bash
 uv tool install .

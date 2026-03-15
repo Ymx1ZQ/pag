@@ -126,23 +126,12 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] CLI shows prompt_style after style creation
 - [x] Added 5 new unit tests (136 total)
 
-## M17 — Aggiungere stili Tileset (rd_tile)
+## M17 — Aggiungere stili Tileset (rd_tile) ✅
 
-L'API supporta 6 stili tileset che non sono nel nostro registry e non hanno un comando CLI.
-
-**Stili da aggiungere a `styles.py`:**
-- [ ] `rd_tile__tileset` (16→32)
-- [ ] `rd_tile__tileset_advanced` (16→32)
-- [ ] `rd_tile__single_tile` (16→64)
-- [ ] `rd_tile__tile_variation` (16→128)
-- [ ] `rd_tile__tile_object` (16→96)
-- [ ] `rd_tile__scene_object` (64→384)
-
-**CLI:**
-- [ ] Aggiungere comando `pag tileset` (o integrare in `pag generate` con model detection)
-- [ ] Supportare `extra_prompt` e `extra_input_image` per `tileset_advanced`
-- [ ] Aggiungere `rd_tile` come opzione in `pag list-styles --model`
-- [ ] Unit test
+- [x] Added 6 rd_tile styles with correct size limits
+- [x] Added `pag tileset` command with --extra-prompt, --input-image, --extra-input-image
+- [x] Added `rd_tile` to `pag list-styles --model` filter
+- [x] Added 11 new unit tests (147 total)
 
 ## M18 — Aggiungere Advanced Animations (rd_advanced_animation)
 

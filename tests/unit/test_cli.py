@@ -299,6 +299,57 @@ def test_animate_input_image(mock_key, mock_client_cls, runner, tmp_path):
     assert req.input_image is not None
 
 
+# ── tileset ─────────────────────────────────────────────────────────────────
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_tileset_basic(mock_key, mock_client_cls, runner, tmp_path):
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "tileset", "stone floor",
+        "--style", "single_tile",
+        "--size", "32x32",
+        "-o", str(tmp_path / "tile.png"),
+    ])
+    assert result.exit_code == 0
+    assert "Saved:" in result.output
+
+
+@patch("pag.cli.RetroClient")
+@patch("pag.cli.resolve_api_key", return_value="test-key")
+def test_tileset_advanced_with_extra_prompt(mock_key, mock_client_cls, runner, tmp_path):
+    mock_client = MagicMock()
+    mock_client.infer.return_value = _mock_response()
+    mock_client.__enter__ = MagicMock(return_value=mock_client)
+    mock_client.__exit__ = MagicMock(return_value=False)
+    mock_client_cls.return_value = mock_client
+
+    result = runner.invoke(main, [
+        "tileset", "grey stones",
+        "--style", "rd_tile__tileset_advanced",
+        "--extra-prompt", "green grass",
+        "-o", str(tmp_path / "tileset.png"),
+    ])
+    assert result.exit_code == 0
+    req = mock_client.infer.call_args[0][0]
+    assert req.extra_prompt == "green grass"
+
+
+def test_tileset_unknown_style(runner):
+    result = runner.invoke(main, [
+        "tileset", "stone",
+        "--style", "nonexistent",
+        "--api-key", "test",
+    ])
+    assert result.exit_code != 0
+
+
 # ── cost ─────────────────────────────────────────────────────────────────────
 
 

@@ -63,7 +63,7 @@ def main(ctx: click.Context, verbose: bool) -> None:
 
 
 @main.command("list-styles")
-@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "animation"]), default=None)
+@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "rd_tile", "animation"]), default=None)
 def list_styles_cmd(model: str | None) -> None:
     """List all available built-in styles."""
     for s in list_styles(model):
@@ -267,6 +267,101 @@ def animate(
     click.echo(f"Cost: {resp.balance_cost} credits (remaining: {resp.remaining_balance})", err=True)
 
 
+# ── tileset ─────────────────────────────────────────────────────────────────
+
+
+@main.command()
+@click.argument("prompt")
+@click.option("--style", required=True, help="Tileset style (e.g. tileset, single_tile). Use `pag list-styles --model rd_tile`.")
+@click.option("--size", default=None, help="Tile size as WxH (e.g. 32x32).")
+@click.option("--extra-prompt", default=None, help="Secondary prompt (for tileset_advanced outside texture).")
+@click.option("--input-image", default=None, type=click.Path(exists=True), help="Input/inspiration image.")
+@click.option("--extra-input-image", default=None, type=click.Path(exists=True), help="Extra input image (for tileset_advanced outside texture).")
+@click.option("-o", "--output", default=None, help="Output file path.")
+@click.option("-d", "--output-dir", default=None, type=click.Path(), help="Output directory.")
+@click.option("--name-pattern", default=None, help="Filename pattern.")
+@click.option("--stdout", "to_stdout", is_flag=True, help="Write base64 to stdout.")
+@click.option("--open", "auto_open", is_flag=True, help="Open generated file with system viewer.")
+@click.option("--api-key", default=None, envvar="RETRODIFFUSION_API_KEY", help="API key.")
+def tileset(
+    prompt: str,
+    style: str,
+    size: str | None,
+    extra_prompt: str | None,
+    input_image: str | None,
+    extra_input_image: str | None,
+    output: str | None,
+    output_dir: str | None,
+    name_pattern: str | None,
+    to_stdout: bool,
+    auto_open: bool,
+    api_key: str | None,
+) -> None:
+    """Generate tileset pixel art."""
+    verbose = click.get_current_context().obj.get("verbose", False)
+    try:
+        key = resolve_api_key(api_key)
+    except ConfigError as e:
+        _handle_error(e)
+
+    full_key = style if style.startswith("rd_tile__") else f"rd_tile__{style}"
+    style_info = get_style(full_key)
+    if style_info is None:
+        _handle_error(click.BadParameter(f"Unknown tileset style: {style!r}. Use `pag list-styles --model rd_tile`."))
+
+    if size:
+        width, height = _parse_size(size)
+    else:
+        width, height = style_info.min_w, style_info.min_h
+
+    try:
+        validate_size(style_info, width, height)
+    except ValueError as e:
+        _handle_error(e)
+
+    input_b64 = _read_ref_image(input_image) if input_image else None
+    extra_input_b64 = _read_ref_image(extra_input_image) if extra_input_image else None
+
+    req = InferenceRequest(
+        prompt=prompt,
+        width=width,
+        height=height,
+        prompt_style=full_key,
+        num_images=1,
+        input_image=input_b64,
+        extra_prompt=extra_prompt,
+        extra_input_image=extra_input_b64,
+    )
+
+    try:
+        with RetroClient(key, verbose=verbose) as client:
+            resp = client.infer(req)
+    except APIError as e:
+        _handle_error(e)
+
+    for i, b64 in enumerate(resp.base64_images):
+        if to_stdout:
+            write_stdout(b64)
+        else:
+            path = resolve_filename(
+                index=i,
+                num_images=1,
+                prompt=prompt,
+                style=full_key,
+                seed=None,
+                is_animation=False,
+                output=output,
+                output_dir=output_dir,
+                name_pattern=name_pattern,
+            )
+            decode_and_save(b64, path)
+            click.echo(f"Saved: {path}")
+            if auto_open:
+                _open_file(path)
+
+    click.echo(f"Cost: {resp.balance_cost} credits (remaining: {resp.remaining_balance})", err=True)
+
+
 # ── cost ─────────────────────────────────────────────────────────────────────
 
 
@@ -327,7 +422,7 @@ def styles() -> None:
 
 
 @styles.command("list")
-@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "animation"]), default=None)
+@click.option("--model", type=click.Choice(["rd_pro", "rd_fast", "rd_plus", "rd_tile", "animation"]), default=None)
 def styles_list(model: str | None) -> None:
     """List available built-in styles."""
     for s in list_styles(model):

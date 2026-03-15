@@ -143,6 +143,21 @@ RD_PLUS_STYLES: list[StyleInfo] = [
     _plus("skill_icon", "Skill Icon", min_s=16, max_s=128),
 ]
 
+RD_TILE_STYLES: list[StyleInfo] = [
+    StyleInfo(key="rd_tile__tileset", model="rd_tile", label="Tileset",
+             min_w=16, max_w=32, min_h=16, max_h=32),
+    StyleInfo(key="rd_tile__tileset_advanced", model="rd_tile", label="Tileset Advanced",
+             min_w=16, max_w=32, min_h=16, max_h=32),
+    StyleInfo(key="rd_tile__single_tile", model="rd_tile", label="Single Tile",
+             min_w=16, max_w=64, min_h=16, max_h=64),
+    StyleInfo(key="rd_tile__tile_variation", model="rd_tile", label="Tile Variation",
+             min_w=16, max_w=128, min_h=16, max_h=128),
+    StyleInfo(key="rd_tile__tile_object", model="rd_tile", label="Tile Object",
+             min_w=16, max_w=96, min_h=16, max_h=96),
+    StyleInfo(key="rd_tile__scene_object", model="rd_tile", label="Scene Object",
+             min_w=64, max_w=384, min_h=64, max_h=384),
+]
+
 ANIMATION_STYLES: list[StyleInfo] = [
     _anim("any_animation", 64, 64, label="Any Animation"),
     _anim("8_dir_rotation", 80, 80, label="8-Dir Rotation"),
@@ -153,7 +168,8 @@ ANIMATION_STYLES: list[StyleInfo] = [
 ]
 
 ALL_STYLES: list[StyleInfo] = (
-    RD_PRO_STYLES + RD_FAST_STYLES + RD_PLUS_STYLES + ANIMATION_STYLES
+    RD_PRO_STYLES + RD_FAST_STYLES + RD_PLUS_STYLES
+    + RD_TILE_STYLES + ANIMATION_STYLES
 )
 
 _STYLE_MAP: dict[str, StyleInfo] = {s.key: s for s in ALL_STYLES}

@@ -8,6 +8,7 @@ from pag.styles import (
     RD_FAST_STYLES,
     RD_PLUS_STYLES,
     RD_PRO_STYLES,
+    RD_TILE_STYLES,
     get_style,
     list_styles,
     validate_size,
@@ -15,7 +16,10 @@ from pag.styles import (
 
 
 def test_all_styles_count():
-    total = len(RD_PRO_STYLES) + len(RD_FAST_STYLES) + len(RD_PLUS_STYLES) + len(ANIMATION_STYLES)
+    total = (
+        len(RD_PRO_STYLES) + len(RD_FAST_STYLES) + len(RD_PLUS_STYLES)
+        + len(RD_TILE_STYLES) + len(ANIMATION_STYLES)
+    )
     assert len(ALL_STYLES) == total
 
 
@@ -80,7 +84,7 @@ def test_validate_size_square_only_valid():
 
 def test_style_keys_prefixed():
     for s in ALL_STYLES:
-        assert s.key.startswith(("rd_pro__", "rd_fast__", "rd_plus__", "animation__"))
+        assert s.key.startswith(("rd_pro__", "rd_fast__", "rd_plus__", "rd_tile__", "animation__"))
 
 
 # ── Verify correct style names match official API ───────────────────────────
@@ -159,3 +163,36 @@ def test_validate_low_res_rejects_above_max():
     style = get_style("rd_fast__low_res")
     with pytest.raises(ValueError, match="Width.*out of range"):
         validate_size(style, 256, 128)
+
+
+# ── Tileset styles ──────────────────────────────────────────────────────────
+
+
+def test_tileset_styles_exist():
+    expected = [
+        "rd_tile__tileset", "rd_tile__tileset_advanced",
+        "rd_tile__single_tile", "rd_tile__tile_variation",
+        "rd_tile__tile_object", "rd_tile__scene_object",
+    ]
+    for key in expected:
+        assert get_style(key) is not None, f"{key} should exist"
+
+
+def test_list_styles_rd_tile():
+    tiles = list_styles("rd_tile")
+    assert len(tiles) == len(RD_TILE_STYLES)
+    assert all(s.model == "rd_tile" for s in tiles)
+
+
+@pytest.mark.parametrize("key,min_s,max_s", [
+    ("rd_tile__tileset", 16, 32),
+    ("rd_tile__tileset_advanced", 16, 32),
+    ("rd_tile__single_tile", 16, 64),
+    ("rd_tile__tile_variation", 16, 128),
+    ("rd_tile__tile_object", 16, 96),
+    ("rd_tile__scene_object", 64, 384),
+])
+def test_tileset_size_limits(key, min_s, max_s):
+    style = get_style(key)
+    assert style.min_w == min_s
+    assert style.max_w == max_s

@@ -42,8 +42,12 @@ def _handle_error(e: Exception) -> None:
 
 @click.group()
 @click.version_option(version=__version__, prog_name="pag")
-def main() -> None:
+@click.option("-v", "--verbose", is_flag=True, help="Show request/response payloads.")
+@click.pass_context
+def main(ctx: click.Context, verbose: bool) -> None:
     """pag — Pixel Art Generator powered by Retro Diffusion."""
+    ctx.ensure_object(dict)
+    ctx.obj["verbose"] = verbose
 
 
 # ── list-styles (top-level) ──────────────────────────────────────────────────
@@ -92,6 +96,7 @@ def generate(
     api_key: str | None,
 ) -> None:
     """Generate pixel art from a text prompt."""
+    verbose = click.get_current_context().obj.get("verbose", False)
     try:
         key = resolve_api_key(api_key)
     except ConfigError as e:
@@ -127,7 +132,7 @@ def generate(
     )
 
     try:
-        with RetroClient(key) as client:
+        with RetroClient(key, verbose=verbose) as client:
             resp = client.infer(req)
     except APIError as e:
         _handle_error(e)
@@ -178,6 +183,7 @@ def animate(
     api_key: str | None,
 ) -> None:
     """Generate an animated sprite from a text prompt."""
+    verbose = click.get_current_context().obj.get("verbose", False)
     try:
         key = resolve_api_key(api_key)
     except ConfigError as e:
@@ -208,7 +214,7 @@ def animate(
     )
 
     try:
-        with RetroClient(key) as client:
+        with RetroClient(key, verbose=verbose) as client:
             resp = client.infer(req)
     except APIError as e:
         _handle_error(e)
@@ -253,6 +259,7 @@ def cost(
     api_key: str | None,
 ) -> None:
     """Estimate the credit cost without generating images."""
+    verbose = click.get_current_context().obj.get("verbose", False)
     try:
         key = resolve_api_key(api_key)
     except ConfigError as e:
@@ -277,7 +284,7 @@ def cost(
     )
 
     try:
-        with RetroClient(key) as client:
+        with RetroClient(key, verbose=verbose) as client:
             resp = client.infer(req)
     except APIError as e:
         _handle_error(e)
@@ -316,6 +323,7 @@ def styles_create(
     api_key: str | None,
 ) -> None:
     """Create a new custom style."""
+    verbose = click.get_current_context().obj.get("verbose", False)
     try:
         key = resolve_api_key(api_key)
     except ConfigError as e:
@@ -331,7 +339,7 @@ def styles_create(
     )
 
     try:
-        with RetroClient(key) as client:
+        with RetroClient(key, verbose=verbose) as client:
             resp = client.create_style(req)
     except APIError as e:
         _handle_error(e)
@@ -351,6 +359,7 @@ def styles_update(
     api_key: str | None,
 ) -> None:
     """Update an existing custom style."""
+    verbose = click.get_current_context().obj.get("verbose", False)
     try:
         key = resolve_api_key(api_key)
     except ConfigError as e:
@@ -359,7 +368,7 @@ def styles_update(
     req = StyleUpdateRequest(name=name, description=description)
 
     try:
-        with RetroClient(key) as client:
+        with RetroClient(key, verbose=verbose) as client:
             resp = client.update_style(style_id, req)
     except APIError as e:
         _handle_error(e)
@@ -372,13 +381,14 @@ def styles_update(
 @click.option("--api-key", default=None, envvar="RETRODIFFUSION_API_KEY", help="API key.")
 def styles_delete(style_id: str, api_key: str | None) -> None:
     """Delete a custom style."""
+    verbose = click.get_current_context().obj.get("verbose", False)
     try:
         key = resolve_api_key(api_key)
     except ConfigError as e:
         _handle_error(e)
 
     try:
-        with RetroClient(key) as client:
+        with RetroClient(key, verbose=verbose) as client:
             client.delete_style(style_id)
     except APIError as e:
         _handle_error(e)

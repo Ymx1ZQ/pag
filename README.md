@@ -120,6 +120,23 @@ pag generate "grass texture" --style rd_pro__default --tile-x --tile-y
 | `--stdout` | Write base64 to stdout instead of saving files |
 | `--api-key` | Override API key for this command |
 
+### Verbose mode and spinner
+
+All API calls show an animated spinner with elapsed time:
+
+```
+⠹ Generating... 3.2s
+Generating... done (12.4s)
+```
+
+Use `-v` / `--verbose` (before the subcommand) to see full request and response payloads:
+
+```bash
+pag -v generate "a cat" --style rd_pro__default --size 128x128
+```
+
+This prints the JSON request body and response to stderr, with base64 fields truncated for readability.
+
 ### `pag animate` — Generate animations
 
 Generate animated sprites as GIF or PNG spritesheet.

@@ -59,3 +59,11 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] Finalize `install.sh` — Python 3.12+ check, uv detection/install, `uv tool install .`, verification
 - [x] Comprehensive README with quickstart, all commands/options documented, filename patterns
 - [x] Verify all unit (82) and live (10) tests pass
+
+## M8 — Spinner e verbose mode ✅
+
+- [x] Spinner animato durante le chiamate API (elapsed time visibile)
+- [x] Flag `--verbose` / `-v` globale che mostra request payload e response payload (JSON pretty-printed)
+- [x] Il verbose tronca i campi base64 (reference_images, base64_images) per leggibilità
+- [x] Unit tests per spinner e verbose (12 test)
+- [x] Aggiornare README

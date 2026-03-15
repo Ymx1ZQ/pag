@@ -24,6 +24,16 @@ class InferenceRequest(BaseModel):
     remove_bg: bool = False
     input_image: str | None = None
     return_spritesheet: bool | None = None
+    strength: float | None = Field(default=None, ge=0.0, le=1.0)
+    input_palette: str | None = None
+    return_pre_palette: bool | None = None
+    bypass_prompt_expansion: bool | None = None
+    include_downloadable_data: bool | None = None
+    return_non_bg_removed: bool | None = None
+    upscale_output_factor: int | None = None
+    extra_prompt: str | None = None
+    extra_input_image: str | None = None
+    frames_duration: int | None = None
 
 
 class InferenceResponse(BaseModel):

@@ -63,6 +63,64 @@ class TestInferenceRequest:
                 prompt_style="rd_pro__default", num_images=0,
             )
 
+    def test_img2img_fields(self):
+        req = InferenceRequest(
+            prompt="x", width=128, height=128,
+            prompt_style="rd_pro__default",
+            input_image="base64data",
+            strength=0.8,
+        )
+        assert req.strength == 0.8
+        assert req.input_image == "base64data"
+
+    def test_strength_out_of_range(self):
+        with pytest.raises(ValidationError):
+            InferenceRequest(
+                prompt="x", width=128, height=128,
+                prompt_style="rd_pro__default", strength=1.5,
+            )
+
+    def test_palette_fields(self):
+        req = InferenceRequest(
+            prompt="x", width=128, height=128,
+            prompt_style="rd_pro__default",
+            input_palette="base64palette",
+            return_pre_palette=True,
+        )
+        assert req.input_palette == "base64palette"
+        assert req.return_pre_palette is True
+
+    def test_advanced_flags(self):
+        req = InferenceRequest(
+            prompt="x", width=128, height=128,
+            prompt_style="rd_pro__default",
+            bypass_prompt_expansion=True,
+            include_downloadable_data=True,
+            return_non_bg_removed=True,
+            upscale_output_factor=1,
+        )
+        assert req.bypass_prompt_expansion is True
+        assert req.include_downloadable_data is True
+        assert req.upscale_output_factor == 1
+
+    def test_tileset_fields(self):
+        req = InferenceRequest(
+            prompt="stones", width=32, height=32,
+            prompt_style="rd_tile__tileset_advanced",
+            extra_prompt="green grass",
+            extra_input_image="base64extra",
+        )
+        assert req.extra_prompt == "green grass"
+        assert req.extra_input_image == "base64extra"
+
+    def test_frames_duration(self):
+        req = InferenceRequest(
+            prompt="walk", width=96, height=96,
+            prompt_style="rd_advanced_animation__walking",
+            frames_duration=8,
+        )
+        assert req.frames_duration == 8
+
 
 class TestInferenceResponse:
     def test_parse(self):

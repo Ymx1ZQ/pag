@@ -114,21 +114,10 @@ Note: Removed `list_styles` (GET /v1/styles) — API returns 405 Method Not Allo
 - [x] `InferenceRequest.height`: `ge=24` → `ge=16`
 - [x] Added test for minimum size 16 acceptance
 
-## M15 — Aggiungere parametri API mancanti a InferenceRequest
+## M15 — Aggiungere parametri API mancanti a InferenceRequest ✅
 
-Parametri supportati dall'API che il nostro model non include.
-
-- [ ] `strength: float | None` (0.0–1.0, per img2img)
-- [ ] `input_palette: str | None` (base64, riferimento palette colori)
-- [ ] `return_pre_palette: bool` (ricevere immagine pre-palette)
-- [ ] `bypass_prompt_expansion: bool` (disabilitare prompt expansion)
-- [ ] `include_downloadable_data: bool` (per inventory_items e simili)
-- [ ] `return_non_bg_removed: bool` (ricevere immagine originale quando remove_bg=True)
-- [ ] `upscale_output_factor: int | None` (1 = risoluzione nativa, null = default)
-- [ ] `extra_prompt: str | None` (per tileset_advanced)
-- [ ] `extra_input_image: str | None` (per tileset_advanced)
-- [ ] `frames_duration: int | None` (per advanced animations: 4, 6, 8, 10, 12, 16)
-- [ ] Aggiornare unit test
+- [x] Added all 10 missing fields: strength, input_palette, return_pre_palette, bypass_prompt_expansion, include_downloadable_data, return_non_bg_removed, upscale_output_factor, extra_prompt, extra_input_image, frames_duration
+- [x] Added 6 new unit tests covering all new fields
 
 ## M16 — Fix InferenceResponse e StyleResponse
 
